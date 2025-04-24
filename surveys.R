@@ -11,9 +11,12 @@ install_github("cloudyr/limer")
 library(dotenv)
 library(limer)
 
-dotenv::load_dot_env()
+load_dot_env()
 
-options(lime_api = 'https://survey.bjeldbak.com/index.php/admin/remotecontrol')
+# Limer
+# https://github.com/cloudyr/limer
+
+options(lime_api = Sys.getenv("API_URL"))
 options(lime_username = Sys.getenv("USERNAME"))
 options(lime_password = Sys.getenv("PASSWORD"))
 
@@ -22,4 +25,14 @@ get_session_key()  # Log in
 # Udkommenter for at se survey ids
 # call_limer(method = "list_surveys")
 
-responses <- get_responses(395995)
+# Alternativ måde at få responses på
+# responses <- get_responses(395995)
+
+responses <- base64_to_df(call_limer(method = "export_responses", 
+                       params = list(iSurveyID = 395995, 
+                                     sDocumentType = "csv", 
+                                     sLanguageCode = "en", 
+                                     sCompletionStatus = "complete", 
+                                     sHeadingType = "code", 
+                                     sResponseType = "short")))
+
