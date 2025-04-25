@@ -17,19 +17,26 @@ responses <- base64_to_df(call_limer(method = "export_responses", params = list(
            iSurveyID = 395995, 
            sDocumentType = "csv", 
            sLanguageCode = "en", 
-           sCompletionStatus = "complete", 
+           sCompletionStatus = "all", 
            sHeadingType = "code", 
            sResponseType = "short")))
 
-filtered_responses <- filter_valid_responses(responses)
 
-cleaned_responses <- clean_responses(filtered_responses)
+filtered <- filter_responses(responses)
 
-print_group_dist_plot(cleaned_responses)
-print_gender_dist_plot(cleaned_responses)
-print_age_dist_plot(cleaned_responses)
-print_education_level_dist_plot(cleaned_responses)
-print_ranking_dist_plot(cleaned_responses)
+valid_responses <- filtered$valid
+semi_valid_responses <- filtered$semi_valid
+invalid_responses <- filtered$invalid
+
+cleaned_valid <- clean_responses(valid_responses)
+cleaned_semi_valid<- clean_responses(semi_valid_responses)
+cleaned_invalid <- clean_responses(invalid_responses)
+
+print_group_dist_plot(cleaned_valid)
+print_gender_dist_plot(cleaned_valid)
+print_age_dist_plot(cleaned_valid)
+print_education_level_dist_plot(cleaned_valid)
+print_ranking_dist_plot(cleaned_valid)
 
 release_session_key()
 

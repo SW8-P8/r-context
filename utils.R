@@ -3,18 +3,23 @@ library(tidyr)
 library(rlang)
 
 
-filter_valid_responses <- function(df) {
+filter_responses <- function(df) {
   first_check_passed <- !is.na(df$sensitivity2.sensAttentionCheck.) & df$sensitivity2.sensAttentionCheck. == 4
   
   second_check_passed <- (
     (df$GROUP == 0 & !is.na(df$G1drawingClic2.G1AttentionCheck.) & df$G1drawingClic2.G1AttentionCheck. == 1) |
-    (df$GROUP == 1 & !is.na(df$G2baselineClic2.G2AttentionCheck.) & df$G2baselineClic2.G2AttentionCheck. == 5) |
-    (df$GROUP == 2 & !is.na(df$G3descClic2.G3AttentionCheck.) & df$G3descClic2.G3AttentionCheck. == 2) |
-    (df$GROUP == 3 & !is.na(df$G4warnClic2.G4AttentionCheck.) & df$G4warnClic2.G4AttentionCheck. == 4)
+      (df$GROUP == 1 & !is.na(df$G2baselineClic2.G2AttentionCheck.) & df$G2baselineClic2.G2AttentionCheck. == 5) |
+      (df$GROUP == 2 & !is.na(df$G3descClic2.G3AttentionCheck.) & df$G3descClic2.G3AttentionCheck. == 2) |
+      (df$GROUP == 3 & !is.na(df$G4warnClic2.G4AttentionCheck.) & df$G4warnClic2.G4AttentionCheck. == 4)
   )
   
-  return(df[first_check_passed & second_check_passed, ])
+  list(
+    valid = df[first_check_passed & second_check_passed, ],
+    semi_valid = df[first_check_passed != second_check_passed, ],
+    invalid = df[!(first_check_passed | second_check_passed), ]
+  )
 }
+
 
 
 merge_columns <- function(df, cols_to_merge, new_col_name = "merged_col") {
@@ -29,7 +34,7 @@ remove_columns <- function(df, cols_to_remove) {
 }
 
 clean_responses <- function(df) {
-  df <- remove_columns(df, c("lastpage", "startlanguage", "seed", "datestamp", "instagramUser","scsintro", "interactiveIntro", "notInTargetGroup"))
+  df <- remove_columns(df, c("startlanguage", "seed", "datestamp", "instagramUser","scsintro", "interactiveIntro", "notInTargetGroup"))
   
   # baseline
   df <- remove_columns(df, c("G1baselineIntro", "G2baselineIntro", "G3baselineIntro", "G4baselineIntro"))
