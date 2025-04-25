@@ -68,9 +68,9 @@ print_education_level_dist_plot <- function(df) {
 
 print_ranking_dist_plot <- function(df) {
   # create a dataset
-  specie <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
+  rank <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
   condition <- rep(c("insta" , "desc" , "warn", "draw") , 4)
-  value <- c(
+  votes <- c(
     table(df$ranking.1)["insta"],
     table(df$ranking.1)["desc"],
     table(df$ranking.1)["warn"],
@@ -88,12 +88,12 @@ print_ranking_dist_plot <- function(df) {
     table(df$ranking.4)["warn"],
     table(df$ranking.4)["draw"]
   )
-  data <- data.frame(specie,condition,value)
+  data <- data.frame(rank,condition,votes)
   
   # Stacked + percent
-  plot <- ggplot(data, aes(fill=condition, y=value, x=specie)) + 
+  plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
     geom_bar(position = "stack", stat = "identity") +  # Switch to "stack" for raw counts
-    geom_text(aes(label = value), position = position_stack(vjust = 0.5))  # Add labels to each part of the bar
+    geom_text(aes(label = votes), position = position_stack(vjust = 0.5))  # Add labels to each part of the bar
   
   print(plot)
 }
