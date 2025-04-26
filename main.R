@@ -21,22 +21,20 @@ responses <- base64_to_df(call_limer(method = "export_responses", params = list(
            sHeadingType = "code", 
            sResponseType = "short")))
 
+release_session_key()
 
 filtered <- filter_responses(responses)
 
-valid_responses <- filtered$valid
-semi_valid_responses <- filtered$semi_valid
-invalid_responses <- filtered$invalid
+responses_valid <- filtered$valid
+responses_semi_valid <- filtered$semi_valid
+responses_invalid <- filtered$invalid
 
-cleaned_valid <- clean_responses(valid_responses)
-cleaned_semi_valid<- clean_responses(semi_valid_responses)
-cleaned_invalid <- clean_responses(invalid_responses)
+cleaned_valid <- clean_responses(responses_valid)
+cleaned_semi_valid<- clean_responses(responses_semi_valid)
+cleaned_invalid <- clean_responses(responses_invalid)
 
 print_group_dist_plot(cleaned_valid)
 print_gender_dist_plot(cleaned_valid)
 print_age_dist_plot(cleaned_valid)
 print_education_level_dist_plot(cleaned_valid)
 print_ranking_dist_plot(cleaned_valid)
-
-release_session_key()
-
