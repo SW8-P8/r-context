@@ -13,10 +13,13 @@ filter_responses <- function(df) {
       (df$GROUP == 3 & !is.na(df$G4warnClic2.G4AttentionCheck.) & df$G4warnClic2.G4AttentionCheck. == 4)
   )
   
+  completed <- df$lastpage == 121
+  
   list(
-    valid = df[first_check_passed & second_check_passed, ],
-    semi_valid = df[first_check_passed != second_check_passed, ],
-    invalid = df[!(first_check_passed | second_check_passed), ]
+    valid = df[first_check_passed & second_check_passed & completed,],
+    almost_valid = df[first_check_passed & second_check_passed & !completed,],
+    semi_valid = df[first_check_passed != second_check_passed,],
+    invalid = df[!(first_check_passed | second_check_passed),]
   )
 }
 
