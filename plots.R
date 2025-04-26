@@ -142,7 +142,7 @@ print_like_density_plot <- function(df) {
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.4) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
+    labs(x = "Score", y = "Density", title = "Density Plot of Likability Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
   print(plot)
@@ -157,7 +157,7 @@ print_info_density_plot <- function(df) {
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.4) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
+    labs(x = "Score", y = "Density", title = "Density Plot of Informational Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
   print(plot)
@@ -172,7 +172,7 @@ print_cred_density_plot <- function(df) {
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.4) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
+    labs(x = "Score", y = "Density", title = "Density Plot of Credibility Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
   print(plot)
@@ -187,7 +187,7 @@ print_clic_density_plot <- function(df) {
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.4) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
+    labs(x = "Score", y = "Density", title = "Density Plot of Overall Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
   print(plot)
