@@ -28,14 +28,45 @@ merge_columns <- function(df, cols_to_merge, new_col_name = "merged_col") {
     dplyr::select(-dplyr::all_of(cols_to_merge))
 }
 
+average_columns <- function(df, cols_to_average, new_col_name = "average_col") {
+  df %>%
+    dplyr::mutate(!!new_col_name := rowMeans(dplyr::across(dplyr::all_of(cols_to_average)), na.rm = TRUE)) %>%
+    dplyr::select(-dplyr::all_of(cols_to_average))
+}
+
+sum_columns <- function(df, cols_to_sum, new_col_name = "sum_col") {
+  df %>%
+    dplyr::mutate(!!new_col_name := rowSums(dplyr::across(dplyr::all_of(cols_to_sum)), na.rm = TRUE)) %>%
+    dplyr::select(-dplyr::all_of(cols_to_sum))
+}
+
 remove_columns <- function(df, cols_to_remove) {
   df[cols_to_remove] <- NULL
   return(df)
 }
 
 clean_responses <- function(df) {
-  df <- remove_columns(df, c("startlanguage", "seed", "datestamp", "instagramUser","scsintro", "interactiveIntro", "notInTargetGroup"))
+  df <- clean_useless_cols(df)
+  df <- clean_sensitivity_cols(df)
+  df <- clean_prototype_cols(df)
   
+  return(df)
+}
+
+clean_useless_cols <- function(df) {
+  df <- remove_columns(df, c("startlanguage", "seed", "datestamp", "instagramUser","scsintro", "interactiveIntro", "notInTargetGroup"))
+  return(df)
+}
+
+clean_sensitivity_cols <- function(df) {
+  df <- sum_columns(df, c("sensitivity1.sens1.", "sensitivity1.sens2.", "sensitivity1.sens3.", "sensitivity2.sens4.", "sensitivity2.sens5.", "sensitivity2.sens6.", "sensitivity2.sens7.", "sensitivity3.sens8.", "sensitivity3.sens9.", "sensitivity3.sens10."), "sens")
+  df <- sum_columns(df, c("sensitivity1.arou1.", "sensitivity1.arou2.", "sensitivity1.arou3.", "sensitivity3.arou4.", "sensitivity3.arou5.", "sensitivity3.arou6.", "sensitivity3.arou7."), "arou")
+  df <- sum_columns(df, c("sensitivity1.pers1.", "sensitivity2.pers2.", "sensitivity2.pers3.", "sensitivity2.pers4."), "pers")
+  df$ers <- df$sens + df$arou + df$pers
+  return(df)
+}
+
+clean_prototype_cols <- function(df) {
   # baseline
   df <- remove_columns(df, c("G1baselineIntro", "G2baselineIntro", "G3baselineIntro", "G4baselineIntro"))
   df <- remove_columns(df, c("G1baseline1", "G2baseline3", "G3baseline4", "G4baseline2"))
@@ -112,6 +143,36 @@ clean_responses <- function(df) {
   df <- merge_columns(df, c("G1drawingThoughts", "G2drawingThoughts", "G3drawingThoughts", "G4drawingThoughts"), "drawingThoughts")
   df <- merge_columns(df, c("G1drawingImprove", "G2drawingImprove", "G3drawingImprove", "G4drawingImprove"), "drawingImprove")
   
+  
+  # compute scores
+  
+  # baseline
+  df <- average_columns(df, c("baselineClic1", "baselineClic2", "baselineClic3"), "baselineClar")
+  df <- average_columns(df, c("baselineClic4", "baselineClic5", "baselineClic6"), "baselineLike")
+  df <- average_columns(df, c("baselineClic7", "baselineClic8", "baselineClic9"), "baselineInfo")
+  df <- average_columns(df, c("baselineClic10", "baselineClic11", "baselineClic12"), "baselineCred")
+  df$baselineClic <- (df$baselineClar + df$baselineLike + df$baselineInfo + df$baselineCred) / 4
+  
+  # desc
+  df <- average_columns(df, c("descClic1", "descClic2", "descClic3"), "descClar")
+  df <- average_columns(df, c("descClic4", "descClic5", "descClic6"), "descLike")
+  df <- average_columns(df, c("descClic7", "descClic8", "descClic9"), "descInfo")
+  df <- average_columns(df, c("descClic10", "descClic11", "descClic12"), "descCred")
+  df$descClic <- (df$descClar + df$descLike + df$descInfo + df$descCred) / 4
+  
+  # warn
+  df <- average_columns(df, c("warnClic1", "warnClic2", "warnClic3"), "warnClar")
+  df <- average_columns(df, c("warnClic4", "warnClic5", "warnClic6"), "warnLike")
+  df <- average_columns(df, c("warnClic7", "warnClic8", "warnClic9"), "warnInfo")
+  df <- average_columns(df, c("warnClic10", "warnClic11", "warnClic12"), "warnCred")
+  df$warnClic <- (df$warnClar + df$warnLike + df$warnInfo + df$warnCred) / 4
+  
+  # drawing
+  df <- average_columns(df, c("drawingClic1", "drawingClic2", "drawingClic3"), "drawingClar")
+  df <- average_columns(df, c("drawingClic4", "drawingClic5", "drawingClic6"), "drawingLike")
+  df <- average_columns(df, c("drawingClic7", "drawingClic8", "drawingClic9"), "drawingInfo")
+  df <- average_columns(df, c("drawingClic10", "drawingClic11", "drawingClic12"), "drawingCred")
+  df$drawingClic <- (df$drawingClar + df$drawingLike + df$drawingInfo + df$drawingCred) / 4
   
   return(df)
 }
