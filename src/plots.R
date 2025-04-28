@@ -1,6 +1,9 @@
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(tidyverse)
+library(hrbrthemes)
+library(viridis)
 
 
 print_group_dist_plot <- function(df) {
@@ -105,18 +108,26 @@ print_instagram_usage_plot <- function(df) {
 
 print_ers_box_plot <- function(df) {
   df_long <- df %>%
-    pivot_longer(cols = c(sens, arou, pers),
+    mutate(
+      sens = sens / 40,
+      arou = arou / 28,
+      pers = pers / 16,
+      ers = ers / 82
+    ) %>%
+    pivot_longer(cols = c(sens, arou, pers, ers),
                  names_to = "score_type",
-                 values_to = "score_value")
+                 values_to = "score_value") %>%
+    mutate(score_type = factor(score_type, levels = c("sens", "arou", "pers", "ers")))
+  
   plot <- ggplot(df_long, aes(x = score_type, y = score_value)) +
     geom_boxplot(fill = "skyblue") +
-    theme_minimal() +
     labs(title = "Distribution of Scores",
          x = "Score Type",
          y = "Score Value")
   
   print(plot)
 }
+
 
 print_clar_density_plot <- function(df) {
   df_long <- df %>%
@@ -225,4 +236,18 @@ print_ranking_dist_plot <- function(df) {
   print(plot)
 }
 
+data <- get("cleaned_valid", envir = .GlobalEnv)
+
+print_group_dist_plot(cleaned_valid)
+print_gender_dist_plot(cleaned_valid)
+print_age_dist_plot(cleaned_valid)
+print_education_level_dist_plot(cleaned_valid)
+print_instagram_usage_plot(cleaned_valid)
+print_ers_box_plot(cleaned_valid)
+print_clar_density_plot(cleaned_valid)
+print_like_density_plot(cleaned_valid)
+print_info_density_plot(cleaned_valid)
+print_cred_density_plot(cleaned_valid)
+print_clic_density_plot(cleaned_valid)
+print_ranking_dist_plot(cleaned_valid)
 
