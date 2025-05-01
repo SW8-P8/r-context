@@ -5,8 +5,9 @@ library(tidyverse)
 library(hrbrthemes)
 library(viridis)
 
+source("src/stats.R")
 
-print_group_dist_plot <- function(df) {
+get_group_dist_plot <- function(df) {
   group_counts <- df %>%
     group_by(GROUP) %>%
     summarise(count = n())
@@ -18,10 +19,11 @@ print_group_dist_plot <- function(df) {
          x = "Group", 
          y = "Number of Participants") +
     theme_minimal()
-  print(plot)
+  
+  return(plot)
 }
 
-print_gender_dist_plot <- function(df) {
+get_gender_dist_plot <- function(df) {
   gender_counts <- df %>%
     group_by(gender) %>%
     summarise(count = n())
@@ -33,11 +35,10 @@ print_gender_dist_plot <- function(df) {
          x = "Gender", 
          y = "Amount") +
     theme_minimal()
-  print(plot)
+  return(plot)
 }
 
-
-print_age_dist_plot <- function(df) {
+get_age_dist_plot <- function(df) {
   age_counts <- df %>%
     group_by(age) %>%
     summarise(count = n())
@@ -49,10 +50,10 @@ print_age_dist_plot <- function(df) {
          x = "Age", 
          y = "Number of Participants") +
     theme_minimal()
-  print(plot)
+  return(plot)
 }
 
-print_education_level_dist_plot <- function(df) {
+get_education_level_dist_plot <- function(df) {
   education_counts <- df %>%
     group_by(education) %>%
     summarise(count = n())
@@ -64,11 +65,10 @@ print_education_level_dist_plot <- function(df) {
          x = "Education Level", 
          y = "Number of Participants") +
     theme_minimal()
-  print(plot)
+  return(plot)
 }
 
-
-print_instagram_usage_plot <- function(df) {
+get_instagram_usage_plot <- function(df) {
   activity_summary <- df %>%
     select(all_of(c(
       "primaryInstaUsage.photos.",
@@ -101,12 +101,10 @@ print_instagram_usage_plot <- function(df) {
     labs(title = "Instagram Activities by Respondents") +
     theme(legend.title = element_blank())
   
-  print(plot)
+  return(plot)
 }
 
-
-
-print_ers_box_plot <- function(df) {
+get_ers_box_plot <- function(df) {
   df_long <- df %>%
     mutate(
       sens = sens / 40,
@@ -125,11 +123,10 @@ print_ers_box_plot <- function(df) {
          x = "Score Type",
          y = "Score Value")
   
-  print(plot)
+  return(plot)
 }
 
-
-print_clar_density_plot <- function(df) {
+get_clar_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineClar, descClar, warnClar, drawingClar),
                  names_to = "score_type",
@@ -141,10 +138,10 @@ print_clar_density_plot <- function(df) {
     labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
-  print(plot)
+  return(plot)
 }
 
-print_like_density_plot <- function(df) {
+get_like_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineLike, descLike, warnLike, drawingLike),
                  names_to = "score_type",
@@ -156,10 +153,10 @@ print_like_density_plot <- function(df) {
     labs(x = "Score", y = "Density", title = "Density Plot of Likability Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
-  print(plot)
+  return(plot)
 }
 
-print_info_density_plot <- function(df) {
+get_info_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineInfo, descInfo, warnInfo, drawingInfo),
                  names_to = "score_type",
@@ -171,10 +168,10 @@ print_info_density_plot <- function(df) {
     labs(x = "Score", y = "Density", title = "Density Plot of Informational Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
-  print(plot)
+  return(plot)
 }
 
-print_cred_density_plot <- function(df) {
+get_cred_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineCred, descCred, warnCred, drawingCred),
                  names_to = "score_type",
@@ -186,10 +183,10 @@ print_cred_density_plot <- function(df) {
     labs(x = "Score", y = "Density", title = "Density Plot of Credibility Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
-  print(plot)
+  return(plot)
 }
 
-print_clic_density_plot <- function(df) {
+get_clic_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineClic, descClic, warnClic, drawingClic),
                  names_to = "score_type",
@@ -201,10 +198,10 @@ print_clic_density_plot <- function(df) {
     labs(x = "Score", y = "Density", title = "Density Plot of Overall Scores by Type") +
     scale_fill_brewer(palette = "Pastel1")
   
-  print(plot)
+  return(plot)
 }
 
-print_ranking_dist_plot <- function(df) {
+get_ranking_dist_plot <- function(df) {
   # create a dataset
   rank <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
   condition <- rep(c("insta" , "desc" , "warn", "draw") , 4)
@@ -233,21 +230,62 @@ print_ranking_dist_plot <- function(df) {
     geom_bar(position = "stack", stat = "identity") +  # Switch to "stack" for raw counts
     geom_text(aes(label = votes), position = position_stack(vjust = 0.5))  # Add labels to each part of the bar
   
-  print(plot)
+  return(plot)
 }
 
-data <- get("cleaned_valid", envir = .GlobalEnv)
+get_clic_histogram_plot <- function(df) {
+  data_long <- get_clic_long_data(df)
+  
+  plot <- histogram <- ggplot(data_long, aes(x = score)) +
+    geom_histogram(binwidth = 0.5, fill = "skyblue", color = "black", alpha = 0.7) +
+    facet_wrap(~prototype) +
+    theme_minimal() +
+    labs(title = "Histogram of Scores by Prototype", x = "Score", y = "Frequency")
+  
+  return(plot)
+}
 
-print_group_dist_plot(cleaned_valid)
-print_gender_dist_plot(cleaned_valid)
-print_age_dist_plot(cleaned_valid)
-print_education_level_dist_plot(cleaned_valid)
-print_instagram_usage_plot(cleaned_valid)
-print_ers_box_plot(cleaned_valid)
-print_clar_density_plot(cleaned_valid)
-print_like_density_plot(cleaned_valid)
-print_info_density_plot(cleaned_valid)
-print_cred_density_plot(cleaned_valid)
-print_clic_density_plot(cleaned_valid)
-print_ranking_dist_plot(cleaned_valid)
+get_clic_qq_plot <- function(df) {
+  data_long <- get_clic_long_data(df)
+  
+  plot <- qqplot <- ggplot(data_long, aes(sample = score)) +
+    stat_qq() + 
+    stat_qq_line() +
+    facet_wrap(~prototype) +
+    theme_minimal() +
+    labs(title = "Q-Q Plot by Prototype", x = "Theoretical Quantiles", y = "Sample Quantiles")
+  return(plot)
+}  
+  
+get_pairwise_rank_plot <- function(df) {
+  data_long <- get_clic_long_data(df)
+  
+  plot <- ggplot(data_long, aes(x = prototype, y = score, fill = prototype)) +
+    geom_boxplot(alpha = 0.6) +
+    geom_signif(comparisons = list(c("descClic", "baselineClic"), 
+                                   c("drawingClic", "baselineClic"),
+                                   c("drawingClic", "descClic"),
+                                   c("warnClic", "baselineClic"),
+                                   c("warnClic", "descClic"),
+                                   c("warnClic", "drawingClic")),
+                map_signif_level = TRUE) +  # Adds significance markers
+    labs(title = "Pairwise Comparisons of Prototypes", x = "Prototype", y = "Score") +
+    theme_minimal() +
+    geom_jitter(color="black", size=0.4, alpha=0.9) +
+    theme(legend.position = "none") +
+    scale_fill_brewer(palette = "Set3")
+  return(plot)
+}
 
+get_rank_coefficient_plot <- function(df) {
+  normalized_weights <- get_rank_placketluce_coef_results(df)
+  coefficients_df <- data.frame(prototype = names(normalized_weights), weight = normalized_weights)
+  
+  plot <- ggplot(coefficients_df, aes(x = prototype, y = weight)) +
+    geom_bar(stat = "identity", fill = "skyblue") +
+    theme_minimal() +
+    labs(title = "Prototype Preference Weights", x = "Prototype", y = "Normalized Weight") +
+    coord_flip()  # To flip the axes if you want a horizontal bar plot
+  return(plot)
+}
+  
