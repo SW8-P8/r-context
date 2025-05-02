@@ -22,7 +22,7 @@ filter_responses <- function(df) {
   list(
     valid_late = df[first_check_passed & second_check_passed & completed & !before_survey_cutoff,],
     valid = df[first_check_passed & second_check_passed & completed & before_survey_cutoff,],
-    almost_valid = df[(first_check_passed & second_check_passed & !completed) | (first_check_passed & second_check_passed & !before_survey_end),],
+    almost_valid = df[(first_check_passed & second_check_passed & !completed) | (first_check_passed & second_check_passed & !before_survey_cutoff),],
     semi_valid = df[first_check_passed != second_check_passed,],
     invalid = df[!(first_check_passed | second_check_passed),]
   )
