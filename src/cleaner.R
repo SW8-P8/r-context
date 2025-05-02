@@ -15,12 +15,13 @@ filter_responses <- function(df) {
   
   seen_sens_content <- df$seensensitivecontent == "Y"
   
-  before_survey_end <- df$submitdate <= "2025-04-29 23:59:59"
+  before_survey_cutoff <- df$submitdate <= "2025-04-29 23:59:59"
   
   completed <- df$lastpage == 121
   
   list(
-    valid = df[first_check_passed & second_check_passed & completed & before_survey_end,],
+    valid_late = df[first_check_passed & second_check_passed & completed & !before_survey_cutoff,],
+    valid = df[first_check_passed & second_check_passed & completed & before_survey_cutoff,],
     almost_valid = df[(first_check_passed & second_check_passed & !completed) | (first_check_passed & second_check_passed & !before_survey_end),],
     semi_valid = df[first_check_passed != second_check_passed,],
     invalid = df[!(first_check_passed | second_check_passed),]

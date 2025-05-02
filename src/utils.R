@@ -6,6 +6,33 @@ write_df_csv <- function(df, location) {
 }
 
 
+upload_tex <- function(tex_str, save_dir = "tex", filename = "table.tex", server_url = "http://localhost:3000/upload") {
+  # Create the save directory if it doesn't exist
+  if (!dir.exists(save_dir)) {
+    dir.create(save_dir, recursive = TRUE)
+  }
+  
+  # Full path to the local file
+  file_path <- file.path(save_dir, filename)
+  
+  # Write the LaTeX string to file
+  writeLines(tex_str, file_path)
+  
+  # Upload the file
+  response <- POST(
+    url = server_url,
+    body = list(plot = upload_file(file_path)),
+    encode = "multipart"
+  )
+  
+  # Handle response
+  if (response$status_code == 200) {
+    return(content(response)$url)
+  } else {
+    stop("Upload failed: ", content(response, as = "text"))
+  }
+}
+
 upload_plot <- function(plot_obj, save_dir = "plots", filename = "plot.png", server_url = "http://localhost:3000/upload", width = 6, height = 5, dpi = 300) {
   # Create the save directory if it doesn't exist
   if (!dir.exists(save_dir)) {

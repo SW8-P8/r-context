@@ -1,6 +1,7 @@
 library(dotenv)
 
 source("src/plots.R")
+source("src/tex.R")
 source("src/stats.R")
 source("src/utils.R")
 
@@ -22,3 +23,5 @@ upload_plot(get_info_density_plot(cleaned_valid), save_dir, "info_density_plot.p
 upload_plot(get_cred_density_plot(cleaned_valid), save_dir, "cred_density_plot.png", server_url)
 upload_plot(get_clic_density_plot(cleaned_valid), save_dir, "clic_density_plot.png", server_url)
 upload_plot(get_ranking_dist_plot(cleaned_valid), save_dir, "ranking_dist.png", server_url)
+
+upload_tex(get_clic_repeated_measures_anova_tex(cleaned_valid), save_dir, "clic_anova.tex", server_url)

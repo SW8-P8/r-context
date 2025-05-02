@@ -70,6 +70,7 @@ get_clic_repeated_measures_anova_results <- function(df) {
                          data = data_long, 
                          within = "prototype", 
                          between = "GROUP")
+  
   return(anova_results)
 }
 
