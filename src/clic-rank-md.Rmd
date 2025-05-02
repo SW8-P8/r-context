@@ -1,15 +1,37 @@
+---
+title: "Web-CLIC Attribute Effects on Design Ranking"
+author: "Your Name"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: '2'
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    theme: readable
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
 library(MASS)
 library(effects)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(gt)
+```
 
-###################
+# Reshaping input data
 
-# Correlation between credibility and ranking
-
-# Step 1: Reshape Ranking Data
+```{r}
 ranking_long <- cleaned_valid %>%
   dplyr::select(participant_id = id, ranking.1., ranking.2., ranking.3., ranking.4.) %>%
   pivot_longer(cols = starts_with("ranking."),
@@ -17,12 +39,16 @@ ranking_long <- cleaned_valid %>%
                values_to = "design") %>%
   mutate(rank = as.numeric(gsub("ranking\\.", "", rank_position))) %>%
   dplyr::select(participant_id, design, rank)
+```
 
-# Step 2: Reshape Credibility Data
+# Analysis by Web-CLIC Dimension
+
+## Credibility
+
+```{r}
 cred_long <- cleaned_valid %>%
-  dplyr::select(participant_id = id, 
-                baselineCred, descCred, warnCred, drawingCred) %>%
-  pivot_longer(cols = c(baselineCred, descCred, warnCred, drawingCred),
+  dplyr::select(participant_id = id, baselineCred, descCred, warnCred, drawingCred) %>%
+  pivot_longer(cols = everything()[-1],
                names_to = "design_cred",
                values_to = "cred_score") %>%
   mutate(design = tolower(gsub("Cred", "", design_cred))) %>%
@@ -31,32 +57,23 @@ cred_long <- cleaned_valid %>%
 cred_long$design <- gsub("drawing", "draw", cred_long$design)
 cred_long$design <- gsub("baseline", "insta", cred_long$design)
 
-# Step 3: Merge Ranking and Credibility Data
 combined_cred_rank <- left_join(ranking_long, cred_long, by = c("participant_id", "design"))
 
-# Step 4a: Perform Spearman Correlation (to examine relationship between rank and cred_score)
-cor_test <- cor.test(combined_cred_rank$rank, combined_cred_rank$cred_score, method = "spearman")
+# Spearman Correlation
+cor.test(combined_cred_rank$rank, combined_cred_rank$cred_score, method = "spearman")
 
-# Step 4b: Perform Ordinal Logistic Regression (to examine the effect of credibility on ranking)
-# Convert rank to an ordered factor
+# Ordinal Logistic Regression
 combined_cred_rank$rank <- factor(combined_cred_rank$rank, levels = 4:1, ordered = TRUE)
-
-# Fit ordinal logistic regression model
 model <- MASS::polr(rank ~ cred_score, data = combined_cred_rank, Hess = TRUE)
+summary(model)
+```
 
-# Get p-values for the model
-ctable <- coef(summary(model))
-pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-print(data.frame(ctable, "p value" = pvals))
+## Likeability
 
-
-# Correlation between likeability and ranking
-
-# Step 2: Reshape Credibility Data
+```{r}
 like_long <- cleaned_valid %>%
-  dplyr::select(participant_id = id, 
-                baselineLike, descLike, warnLike, drawingLike) %>%
-  pivot_longer(cols = c(baselineLike, descLike, warnLike, drawingLike),
+  dplyr::select(participant_id = id, baselineLike, descLike, warnLike, drawingLike) %>%
+  pivot_longer(cols = everything()[-1],
                names_to = "design_like",
                values_to = "like_score") %>%
   mutate(design = tolower(gsub("Like", "", design_like))) %>%
@@ -65,31 +82,21 @@ like_long <- cleaned_valid %>%
 like_long$design <- gsub("drawing", "draw", like_long$design)
 like_long$design <- gsub("baseline", "insta", like_long$design)
 
-# Step 3: Merge Ranking and Credibility Data
 combined_like_rank <- left_join(ranking_long, like_long, by = c("participant_id", "design"))
+cor.test(combined_like_rank$rank, combined_like_rank$like_score, method = "spearman")
 
-# Step 4a: Perform Spearman Correlation (to examine relationship between rank and cred_score)
-cor_test <- cor.test(combined_like_rank$rank, combined_like_rank$like_score, method = "spearman")
-
-# Step 4b: Perform Ordinal Logistic Regression (to examine the effect of credibility on ranking)
-# Convert rank to an ordered factor
 combined_like_rank$rank <- factor(combined_like_rank$rank, levels = 4:1, ordered = TRUE)
-
-# Fit ordinal logistic regression model
 model_like <- MASS::polr(rank ~ like_score, data = combined_like_rank, Hess = TRUE)
+summary(model_like)
 
-# Get p-values for the model
-ctable <- coef(summary(model_like))
-pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-print(data.frame(ctable, "p value" = pvals))
+```
 
-# Correlation between informativeness and ranking
+## Informativeness
 
-# Step 2: Reshape Credibility Data
+```{r}
 info_long <- cleaned_valid %>%
-  dplyr::select(participant_id = id, 
-                baselineInfo, descInfo, warnInfo, drawingInfo) %>%
-  pivot_longer(cols = c(baselineInfo, descInfo, warnInfo, drawingInfo),
+  dplyr::select(participant_id = id, baselineInfo, descInfo, warnInfo, drawingInfo) %>%
+  pivot_longer(cols = everything()[-1],
                names_to = "design_info",
                values_to = "info_score") %>%
   mutate(design = tolower(gsub("Info", "", design_info))) %>%
@@ -98,32 +105,20 @@ info_long <- cleaned_valid %>%
 info_long$design <- gsub("drawing", "draw", info_long$design)
 info_long$design <- gsub("baseline", "insta", info_long$design)
 
-# Step 3: Merge Ranking and Credibility Data
 combined_info_rank <- left_join(ranking_long, info_long, by = c("participant_id", "design"))
+cor.test(combined_info_rank$rank, combined_info_rank$info_score, method = "spearman")
 
-# Step 4a: Perform Spearman Correlation (to examine relationship between rank and cred_score)
-cor_test <- cor.test(combined_info_rank$rank, combined_info_rank$info_score, method = "spearman")
-
-# Step 4b: Perform Ordinal Logistic Regression (to examine the effect of credibility on ranking)
-# Convert rank to an ordered factor
 combined_info_rank$rank <- factor(combined_info_rank$rank, levels = 4:1, ordered = TRUE)
-
-# Fit ordinal logistic regression model
 model_info <- MASS::polr(rank ~ info_score, data = combined_info_rank, Hess = TRUE)
+summary(model_info)
+```
 
-# Get p-values for the model
-ctable <- coef(summary(model_info))
-pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-print(data.frame(ctable, "p value" = pvals))
+## Clarity
 
-
-# Correlation between clarity and ranking
-
-# Step 2: Reshape Credibility Data
+```{r}
 clar_long <- cleaned_valid %>%
-  dplyr::select(participant_id = id, 
-                baselineClar, descClar, warnClar, drawingClar) %>%
-  pivot_longer(cols = c(baselineClar, descClar, warnClar, drawingClar),
+  dplyr::select(participant_id = id, baselineClar, descClar, warnClar, drawingClar) %>%
+  pivot_longer(cols = everything()[-1],
                names_to = "design_clar",
                values_to = "clar_score") %>%
   mutate(design = tolower(gsub("Clar", "", design_clar))) %>%
@@ -132,26 +127,19 @@ clar_long <- cleaned_valid %>%
 clar_long$design <- gsub("drawing", "draw", clar_long$design)
 clar_long$design <- gsub("baseline", "insta", clar_long$design)
 
-# Step 3: Merge Ranking and Credibility Data
 combined_clar_rank <- left_join(ranking_long, clar_long, by = c("participant_id", "design"))
+cor.test(combined_clar_rank$rank, combined_clar_rank$clar_score, method = "spearman")
 
-# Step 4a: Perform Spearman Correlation (to examine relationship between rank and cred_score)
-cor_test <- cor.test(combined_clar_rank$rank, combined_clar_rank$clar_score, method = "spearman")
-
-# Step 4b: Perform Ordinal Logistic Regression (to examine the effect of credibility on ranking)
-# Convert rank to an ordered factor
 combined_clar_rank$rank <- factor(combined_clar_rank$rank, levels = 4:1, ordered = TRUE)
-
-# Fit ordinal logistic regression model
 model_clar <- MASS::polr(rank ~ clar_score, data = combined_clar_rank, Hess = TRUE)
+summary(model_clar)
+```
 
-# Get p-values for the model
-ctable <- coef(summary(model_clar))
-pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-print(data.frame(ctable, "p value" = pvals))
+# Combined
 
+## All Attributes
 
-# Combination of all 3
+```{r}
 combined_clic_long <- ranking_long %>%
   left_join(cred_long, by = c("participant_id", "design")) %>%
   left_join(like_long, by = c("participant_id", "design")) %>%
@@ -164,18 +152,6 @@ model_clic <- MASS::polr(rank ~ cred_score + like_score + info_score + clar_scor
 
 ctable <- coef(summary(model_clic))
 pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-print(data.frame(ctable, "p value" = pvals))
-
-# In a combined ordinal regression model using the Web-CLIC attributes, 
-# informativeness (β = 0.75, p < .001) and likeability (β = 0.29, p < .001) 
-# were significant positive predictors of higher design rankings. 
-# Clarity did not significantly predict rankings (p = .09), while credibility 
-# showed a modest but significant negative association (β = –0.26, p = .02) 
-# when controlling for other factors. These findings suggest that 
-# informativeness and likeability are the most influential factors 
-# in shaping user preferences.
-
-# Create the data frame
 results_df <- data.frame(
   Predictor = rownames(ctable),
   Estimate = round(ctable[, "Value"], 3),
@@ -192,7 +168,11 @@ results_df$Predictor <- recode(results_df$Predictor,
                                "like_score" = "Likeability",
                                "info_score" = "Informativeness",
                                "clar_score" = "Clarity")
+```
 
+## Results Table
+
+```{r}
 results_df %>%
   gt() %>%
   tab_header(
@@ -207,7 +187,7 @@ results_df %>%
   ) %>%
   cols_align(align = "center", columns = everything()) %>%
   cols_width(
-    everything() ~ px(120)  # Or set widths individually if needed
+    everything() ~ px(120)
   ) %>%
   sub_missing(columns = everything(), missing_text = "") %>%
   opt_row_striping() %>%
@@ -216,9 +196,21 @@ results_df %>%
     locations = cells_column_labels(everything())
   ) %>%
   tab_source_note(
-    source_note = md("Note: Impact represent the unique contribution of each Web-CLIC dimension while controlling for the others.")
+    source_note = md("Note: Impact represents the unique contribution of each Web-CLIC dimension while controlling for the others.")
   )
+```
 
+**Interpretation** In a combined ordinal regression model using the
+Web-CLIC attributes:
 
+-   Informativeness (β = 0.83, p \< .001) and likeability (β = 0.32, p
+    \< .001) were significant positive predictors of higher design
+    rankings.
 
+-   Clarity was not statistically significant (p = .07).
 
+-   Credibility had a modest but significant negative association (β =
+    –0.38, p = .003) when controlling for the other factors.
+
+-   These findings suggest that informativeness and likeability are the
+    most influential factors in shaping user preferences.
