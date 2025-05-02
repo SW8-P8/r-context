@@ -20,7 +20,7 @@ filter_responses <- function(df) {
   completed <- df$lastpage == 121
   
   list(
-    valid = df[first_check_passed & second_check_passed & completed,],
+    valid = df[first_check_passed & second_check_passed & completed & before_survey_end,],
     almost_valid = df[(first_check_passed & second_check_passed & !completed) | (first_check_passed & second_check_passed & !before_survey_end),],
     semi_valid = df[first_check_passed != second_check_passed,],
     invalid = df[!(first_check_passed | second_check_passed),]
