@@ -2,7 +2,6 @@ source("src/plots.R")
 source("src/stats.R")
 
 data <- get("cleaned_valid", envir = .GlobalEnv)
-print(get_clic_repeated_measures_anova_results(data))
 
 # Demograhic plots
 print(get_group_dist_plot(cleaned_valid))

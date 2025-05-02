@@ -60,26 +60,17 @@ get_clic_levenes_results <- function(df) {
 get_clic_repeated_measures_anova_results <- function(df) {
   data_long <- get_clic_long_data(df)
   
-  data_long$group <- as.factor(data_long$GROUP)
+  data_long$GROUP <- as.factor(data_long$GROUP)
   data_long$prototype <- as.factor(data_long$prototype)
-  data_long$participant <- as.factor(data_long$id)
+  data_long$id <- as.factor(data_long$id)
+  data_long$gender <- as.factor(data_long$gender)
   
-  anova_results <- aov_ez(id = "participant", 
+  anova_results <- aov_ez(id = "id", 
                          dv = "score", 
                          data = data_long, 
                          within = "prototype", 
-                         between = "group")
-  print(anova_results)
-  ez_result <- ezANOVA(
-    data = data_long,
-    dv = .(score),
-    wid = .(id),
-    within = .(prototype),
-    between = .(GROUP),
-    detailed = TRUE
-  )
-  
-  return(ez_result)
+                         between = "GROUP")
+  return(anova_results)
 }
 
 get_clic_pairwise_prototype_t_test_results <- function(df) {
