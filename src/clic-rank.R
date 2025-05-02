@@ -166,12 +166,13 @@ pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
 print(data.frame(ctable, "p value" = pvals))
 
 # In a combined ordinal regression model using the Web-CLIC attributes, 
-# informativeness (β = 0.76, p < .001) and likeability (β = 0.28, p < .001) 
-# significantly predicted higher design rankings. 
-# Clarity was not a significant predictor (p = .17), and credibility showed a 
-# weak negative association when controlling for other factors (β = –0.25, p = .023). 
-# These results suggest that informativeness and likeability
-# are the most influential components in determining user preference.
+# informativeness (β = 0.75, p < .001) and likeability (β = 0.29, p < .001) 
+# were significant positive predictors of higher design rankings. 
+# Clarity did not significantly predict rankings (p = .09), while credibility 
+# showed a modest but significant negative association (β = –0.26, p = .02) 
+# when controlling for other factors. These findings suggest that 
+# informativeness and likeability are the most influential factors 
+# in shaping user preferences.
 
 
 # Load necessary packages
@@ -183,7 +184,7 @@ results_df <- data.frame(
   Estimate = round(ctable[, "Value"], 3),
   Std_Error = round(ctable[, "Std. Error"], 3),
   t_value = round(ctable[, "t value"], 3),
-  p_value = ifelse(pvals < 0.0001, "< .0001", format(round(pvals, 3), nsmall = 3)),
+  p_value = ifelse(pvals < 0.001, "< .001", format(round(pvals, 3), nsmall = 3)),
   row.names = NULL
 )
 
