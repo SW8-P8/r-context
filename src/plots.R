@@ -237,7 +237,7 @@ get_clic_histogram_plot <- function(df) {
   data_long <- get_clic_long_data(df)
   
   plot <- histogram <- ggplot(data_long, aes(x = score)) +
-    geom_histogram(binwidth = 0.5, fill = "skyblue", color = "black", alpha = 0.7) +
+    geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
     facet_wrap(~prototype) +
     theme_minimal() +
     labs(title = "Histogram of Scores by Prototype", x = "Score", y = "Frequency")

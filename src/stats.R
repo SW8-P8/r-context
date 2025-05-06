@@ -52,10 +52,14 @@ get_clic_anderson_darling_results <- function(df) {
 get_clic_levenes_results <- function(df) {
   data_long <- get_clic_long_data(df)
   
-  data_long$prototype <- as.factor(data_long$prototype)
   data_long$GROUP <- as.factor(data_long$GROUP)
   
-  levene_results <- leveneTest(score ~ prototype * GROUP, data = data_long)
+  data_avg <- data_long %>%
+    group_by(id, GROUP) %>%
+    summarize(score = mean(score), .groups = "drop")
+  
+  levene_results <- leveneTest(score ~ GROUP, data = data_avg)
+  
   return(levene_results)
 }
 

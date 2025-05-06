@@ -1,5 +1,6 @@
 source("src/plots.R")
 source("src/stats.R")
+source("src/tex.R")
 
 data <- get("cleaned_valid", envir = .GlobalEnv)
 
@@ -37,10 +38,12 @@ print(get_clic_levenes_results(data))
 
 # CLIC ANOVA
 print(get_clic_repeated_measures_anova_results(data))
+print(get_clic_repeated_measures_anova_tex(cleaned_valid))
 
 # CLIC pairwise t test
 print(get_clic_pairwise_prototype_t_test_results(data))
 print(get_clic_pairwise_group_t_test_results(data))
+print(get_clic_pairwise_prototype_t_test_tex(cleaned_valid))
 
 #######################################################
 
