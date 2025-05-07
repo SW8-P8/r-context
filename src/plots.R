@@ -4,6 +4,7 @@ library(dplyr)
 library(tidyverse)
 library(hrbrthemes)
 library(viridis)
+library(tidyselect)
 
 source("src/stats.R")
 
@@ -70,7 +71,7 @@ get_education_level_dist_plot <- function(df) {
 
 get_instagram_usage_plot <- function(df) {
   activity_summary <- df %>%
-    select(all_of(c(
+    dplyr::select(all_of(c(
       "primaryInstaUsage.photos.",
       "primaryInstaUsage.stories.",
       "primaryInstaUsage.friends.",
