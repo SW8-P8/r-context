@@ -52,13 +52,13 @@ get_clic_anderson_darling_results <- function(df) {
 get_clic_levenes_results <- function(df) {
   data_long <- get_clic_long_data(df)
   
-  data_long$GROUP <- as.factor(data_long$GROUP)
+  data_long$p_seq <- as.factor(data_long$p_seq)
   
   data_avg <- data_long %>%
-    group_by(id, GROUP) %>%
+    group_by(id, p_seq) %>%
     summarize(score = mean(score), .groups = "drop")
   
-  levene_results <- leveneTest(score ~ GROUP, data = data_avg)
+  levene_results <- leveneTest(score ~ p_seq, data = data_avg)
   
   return(levene_results)
 }
@@ -66,7 +66,7 @@ get_clic_levenes_results <- function(df) {
 get_clic_repeated_measures_anova_results <- function(df) {
   data_long <- get_clic_long_data(df)
   
-  data_long$GROUP <- as.factor(data_long$GROUP)
+  data_long$p_seq <- as.factor(data_long$p_seq)
   data_long$prototype <- as.factor(data_long$prototype)
   data_long$id <- as.factor(data_long$id)
   data_long$gender <- as.factor(data_long$gender)
@@ -75,7 +75,7 @@ get_clic_repeated_measures_anova_results <- function(df) {
                          dv = "score", 
                          data = data_long, 
                          within = "prototype", 
-                         between = "GROUP")
+                         between = "p_seq")
   
   return(anova_results)
 }
@@ -86,9 +86,9 @@ get_clic_pairwise_prototype_t_test_results <- function(df) {
   return(pairwise_results)
 }
 
-get_clic_pairwise_group_t_test_results <- function(df) {
+get_clic_pairwise_p_seq_t_test_results <- function(df) {
   data_long <- get_clic_long_data(df)
-  pairwise_results <- pairwise.t.test(data_long$score, data_long$GROUP, p.adjust.method = "bonferroni")
+  pairwise_results <- pairwise.t.test(data_long$score, data_long$p_seq, p.adjust.method = "bonferroni")
   return(pairwise_results)
 }
 
@@ -100,7 +100,7 @@ get_rank_long_data <- function(df) {
                  names_to = "rank_position",
                  values_to = "prototype") %>%
     mutate(rank = as.numeric(gsub("ranking\\.", "", rank_position))) %>%
-    dplyr::select(id, GROUP, prototype, rank)
+    dplyr::select(id, p_seq, prototype, rank)
   return(rank_long)
 }
 
@@ -108,14 +108,14 @@ get_rank_matrix_data <- function(df) {
   rank_long <- get_rank_long_data(df)
   rank_matrix <- rank_long %>%
     pivot_wider(names_from = prototype, values_from = rank) %>%
-    dplyr::select(-id, -GROUP)
+    dplyr::select(-id, -p_seq)
   return(rank_matrix)
 }
 
 get_rank_friedman_results <- function(df) {
   rank_long <- get_rank_long_data(df)
   
-  rank_long$GROUP <- as.factor(rank_long$GROUP)
+  rank_long$p_seq <- as.factor(rank_long$p_seq)
   rank_long$prototype <- as.factor(rank_long$prototype)
   
   friedman_result <- friedman.test(rank ~ prototype | id, data = rank_long)
@@ -124,10 +124,10 @@ get_rank_friedman_results <- function(df) {
 get_rank_anova_results <- function(df) {
   rank_long <- get_rank_long_data(df)
   
-  rank_long$GROUP <- as.factor(rank_long$GROUP)
+  rank_long$p_seq <- as.factor(rank_long$p_seq)
   rank_long$prototype <- as.factor(rank_long$prototype)
   
-  art_model <- art(rank ~ prototype * GROUP + (1|id), data = rank_long)
+  art_model <- art(rank ~ prototype * p_seq + (1|id), data = rank_long)
   anova_results <- anova(art_model)
   return(anova_results)
 }

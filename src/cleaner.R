@@ -54,6 +54,7 @@ remove_columns <- function(df, cols_to_remove) {
 }
 
 clean_responses <- function(df) {
+  df <- df %>% rename(p_seq = GROUP)
   df <- clean_useless_cols(df)
   df <- clean_sensitivity_cols(df)
   df <- clean_prototype_cols(df)

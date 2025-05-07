@@ -11,7 +11,7 @@ data <- get("cleaned_valid", envir = .GlobalEnv)
 save_dir <- Sys.getenv("PLOTS_SAVE_DIR")
 server_url <- Sys.getenv("PLOT_SERVER_URL")
 
-upload_plot(get_group_dist_plot(cleaned_valid), save_dir, "group_dist.png", server_url)
+upload_plot(get_p_seq_dist_plot(cleaned_valid), save_dir, "p_seq_dist.png", server_url)
 upload_plot(get_gender_dist_plot(cleaned_valid), save_dir, "gender_dist.png", server_url)
 upload_plot(get_age_dist_plot(cleaned_valid), save_dir, "age_dist.png", server_url)
 upload_plot(get_education_level_dist_plot(cleaned_valid), save_dir, "education_dist.png", server_url)

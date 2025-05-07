@@ -7,16 +7,16 @@ library(viridis)
 
 source("src/stats.R")
 
-get_group_dist_plot <- function(df) {
-  group_counts <- df %>%
-    group_by(GROUP) %>%
+get_p_seq_dist_plot <- function(df) {
+  p_seq_counts <- df %>%
+    group_by(p_seq) %>%
     summarise(count = n())
   
-  plot <- ggplot(group_counts, aes(x = factor(GROUP), y = count)) +
+  plot <- ggplot(p_seq_counts, aes(x = factor(p_seq), y = count)) +
     geom_bar(stat = "identity", fill = "skyblue") +
     geom_text(aes(label = count), vjust = -0.5) +
-    labs(title = "Number of Participants in Each Group", 
-         x = "Group", 
+    labs(title = "Number of Participants in Each p-seq", 
+         x = "p-seq", 
          y = "Number of Participants") +
     theme_minimal()
   
