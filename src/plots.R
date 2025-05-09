@@ -258,7 +258,7 @@ get_clic_qq_plot <- function(df) {
   return(plot)
 }  
   
-get_pairwise_rank_plot <- function(df) {
+get_clic_pairwise_prototype_plot <- function(df) {
   data_long <- get_clic_long_data(df)
   
   plot <- ggplot(data_long, aes(x = prototype, y = score, fill = prototype)) +

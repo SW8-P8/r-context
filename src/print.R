@@ -5,19 +5,19 @@ source("src/tex.R")
 data <- get("cleaned_valid", envir = .GlobalEnv)
 
 # Demograhic plots
-print(get_p_seq_dist_plot(cleaned_valid))
-print(get_gender_dist_plot(cleaned_valid))
-print(get_age_dist_plot(cleaned_valid))
-print(get_education_level_dist_plot(cleaned_valid))
-print(get_instagram_usage_plot(cleaned_valid))
-print(get_ers_box_plot(cleaned_valid))
-print(get_clar_density_plot(cleaned_valid))
-print(get_like_density_plot(cleaned_valid))
-print(get_info_density_plot(cleaned_valid))
-print(get_cred_density_plot(cleaned_valid))
-print(get_clic_density_plot(cleaned_valid))
-print(get_ranking_dist_plot(cleaned_valid))
-print(get_rank_coefficient_plot(cleaned_valid))
+print(get_p_seq_dist_plot(data))
+print(get_gender_dist_plot(data))
+print(get_age_dist_plot(data))
+print(get_education_level_dist_plot(data))
+print(get_instagram_usage_plot(data))
+print(get_ers_box_plot(data))
+print(get_clar_density_plot(data))
+print(get_like_density_plot(data))
+print(get_info_density_plot(data))
+print(get_cred_density_plot(data))
+print(get_clic_density_plot(data))
+print(get_ranking_dist_plot(data))
+print(get_rank_coefficient_plot(data))
 
 #######################################################
 
@@ -35,17 +35,15 @@ print(get_clic_levenes_results(data))
 
 # CLIC ANOVA
 print(get_clic_repeated_measures_anova_results(data))
-print(get_clic_repeated_measures_anova_tex(cleaned_valid))
+print(get_clic_repeated_measures_anova_tex(data))
 
 # CLIC pairwise t test
 print(get_clic_pairwise_prototype_t_test_results(data))
 print(get_clic_pairwise_p_seq_t_test_results(data))
-print(get_clic_pairwise_prototype_t_test_tex(cleaned_valid))
+print(get_clic_pairwise_prototype_t_test_tex(data))
+print(get_clic_pairwise_prototype_plot(data))
 
 #######################################################
-
-# RANK pairwise
-print(get_pairwise_rank_plot(data))
 
 # RANK friedman test
 print(get_rank_friedman_results(data))
