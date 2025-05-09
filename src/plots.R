@@ -249,14 +249,23 @@ get_clic_histogram_plot <- function(df) {
 get_clic_qq_plot <- function(df) {
   data_long <- get_clic_long_data(df)
   
-  plot <- qqplot <- ggplot(data_long, aes(sample = score)) +
+  # Define label replacements
+  prototype_labels <- c(
+    "baselineClic" = "Baseline",
+    "descClic" = "Content Description",
+    "warnClic" = "Trigger Warnings",
+    "drawingClic" = "Drawing Filter"
+  )
+  
+  plot <- qqplot <- ggplot(data_long, aes(sample = score, color = prototype)) +
     stat_qq() + 
     stat_qq_line() +
-    facet_wrap(~prototype) +
+    facet_wrap(~prototype, labeller = as_labeller(prototype_labels)) +
     theme_minimal() +
-    labs(title = "Q-Q Plot by Prototype", x = "Theoretical Quantiles", y = "Sample Quantiles")
+    labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + 
+    scale_color_brewer(palette = "Set1")
   return(plot)
-}  
+} 
   
 get_clic_pairwise_prototype_plot <- function(df) {
   data_long <- get_clic_long_data(df)
@@ -270,11 +279,15 @@ get_clic_pairwise_prototype_plot <- function(df) {
                                    c("warnClic", "descClic"),
                                    c("warnClic", "drawingClic")),
                 map_signif_level = TRUE) +  # Adds significance markers
-    labs(title = "Pairwise Comparisons of Prototypes", x = "Prototype", y = "Score") +
+    labs(x = "", y = "Web-CLIC Score") +
     theme_minimal() +
     geom_jitter(color="black", size=0.4, alpha=0.9) +
     theme(legend.position = "none") +
-    scale_fill_brewer(palette = "Set3")
+    scale_fill_brewer(palette = "Set1") + 
+    scale_x_discrete(labels = c("baselineClic" = "Baseline",
+                                "descClic" = "Content Description",
+                                "warnClic" = "Trigger Warnings",
+                                "drawingClic" = "Drawing Filter"))
   return(plot)
 }
 
