@@ -8,12 +8,12 @@
 
 ## Workflow
 1. Run [responses.R](./src/responses.R) to fetch responses (and clean dataset)
-2. Run [print.R](./src/print.R) to generate plots 
+2. Run [print.R](./src/print.R) to print tables and plots to the console
 
 
 ## Other files
 - [stats.R](./src/stats.R) includes statistics
-- [tex.R](./src/tex.R) generates LaTeX tables and figures
-- [upload.R](./src/upload.R) upload tables and figures to server
+- [tex.R](./src/tex.R) generates LaTeX tables and plots
+- [upload.R](./src/upload.R) upload tables and plots to server
 - [cleaner.R](./src/cleaner.R) contains functions used to clean the dataset
 - [utils.R](./src/utils.R) contains utility functions
