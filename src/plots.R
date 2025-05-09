@@ -5,6 +5,7 @@ library(tidyverse)
 library(hrbrthemes)
 library(viridis)
 library(tidyselect)
+library(shadowtext)
 
 source("src/stats.R")
 
@@ -92,15 +93,38 @@ get_instagram_usage_plot <- function(df) {
       label = paste0(round(percent, 1), "%")
     )  # <-- calculate percentages and create labels
   
+  # Define readable activity labels
+  activity_labels <- c(
+    "primaryInstaUsage.photos." = "Posting Photos",
+    "primaryInstaUsage.stories." = "Viewing Stories",
+    "primaryInstaUsage.friends." = "Following Friends",
+    "primaryInstaUsage.celebs." = "Following Celebrities",
+    "primaryInstaUsage.trends." = "Checking Trends",
+    "primaryInstaUsage.brands." = "Following Brands",
+    "primaryInstaUsage.communities." = "Engaging with Communities",
+    "primaryInstaUsage.streams." = "Watching Livestreams",
+    "primaryInstaUsage.messaging." = "Messaging",
+    "primaryInstaUsage.news." = "Reading News",
+    "primaryInstaUsage.other." = "Other"
+  )
+  
   plot <- ggplot(activity_summary, aes(x = "", y = count, fill = activity)) +
     geom_col(width = 1, color = "white") +
     coord_polar(theta = "y") +
     theme_void() +
-    geom_text(aes(label = label), 
-              position = position_stack(vjust = 0.5), 
-              color = "white", size = 4) +  # <-- add percent labels
-    labs(title = "Instagram Activities by Respondents") +
-    theme(legend.title = element_blank())
+    geom_shadowtext(
+      aes(label = label),
+      position = position_stack(vjust = 0.5),
+      color = "white",
+      bg.color = "black",  # shadow/border color
+      size = 4
+    ) +  # <-- add percent labels
+    theme(legend.title = element_blank()) +
+    scale_fill_manual(
+      values = RColorBrewer::brewer.pal(11, "Paired"),  # Optional: reuse Set3 for visual variety
+      labels = activity_labels
+    ) +
+    theme(legend.title = element_blank())  # Removes the title from the legend
   
   return(plot)
 }
@@ -137,7 +161,7 @@ get_clar_density_plot <- function(df) {
     geom_density(alpha = 0.4) +
     theme_minimal() +
     labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
-    scale_fill_brewer(palette = "Pastel1")
+    scale_fill_brewer(palette = "Set1")
   
   return(plot)
 }
@@ -152,7 +176,7 @@ get_like_density_plot <- function(df) {
     geom_density(alpha = 0.4) +
     theme_minimal() +
     labs(x = "Score", y = "Density", title = "Density Plot of Likability Scores by Type") +
-    scale_fill_brewer(palette = "Pastel1")
+    scale_fill_brewer(palette = "Set1")
   
   return(plot)
 }
@@ -202,47 +226,72 @@ get_clic_density_plot <- function(df) {
   return(plot)
 }
 
-get_ranking_dist_plot <- function(df) {
-  # create a dataset
-  rank <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
-  condition <- rep(c("insta" , "desc" , "warn", "draw") , 4)
-  votes <- c(
-    table(df$ranking.1)["insta"],
-    table(df$ranking.1)["desc"],
-    table(df$ranking.1)["warn"],
-    table(df$ranking.1)["draw"],
-    table(df$ranking.2)["insta"],
-    table(df$ranking.2)["desc"],
-    table(df$ranking.2)["warn"],
-    table(df$ranking.2)["draw"],
-    table(df$ranking.3)["insta"],
-    table(df$ranking.3)["desc"],
-    table(df$ranking.3)["warn"],
-    table(df$ranking.3)["draw"],
-    table(df$ranking.4)["insta"],
-    table(df$ranking.4)["desc"],
-    table(df$ranking.4)["warn"],
-    table(df$ranking.4)["draw"]
-  )
-  data <- data.frame(rank,condition,votes)
-  
-  # Stacked + percent
-  plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
-    geom_bar(position = "stack", stat = "identity") +  # Switch to "stack" for raw counts
-    geom_text(aes(label = votes), position = position_stack(vjust = 0.5))  # Add labels to each part of the bar
-  
-  return(plot)
-}
+  get_ranking_dist_plot <- function(df) {
+    # create a dataset
+    rank <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
+    condition <- rep(c("insta" , "desc" , "warn", "draw") , 4)
+    votes <- c(
+      table(df$ranking.1)["insta"],
+      table(df$ranking.1)["desc"],
+      table(df$ranking.1)["warn"],
+      table(df$ranking.1)["draw"],
+      table(df$ranking.2)["insta"],
+      table(df$ranking.2)["desc"],
+      table(df$ranking.2)["warn"],
+      table(df$ranking.2)["draw"],
+      table(df$ranking.3)["insta"],
+      table(df$ranking.3)["desc"],
+      table(df$ranking.3)["warn"],
+      table(df$ranking.3)["draw"],
+      table(df$ranking.4)["insta"],
+      table(df$ranking.4)["desc"],
+      table(df$ranking.4)["warn"],
+      table(df$ranking.4)["draw"]
+    )
+    data <- data.frame(rank,condition,votes)
+    
+    # Stacked + percent
+    plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
+      geom_bar(position = "stack", stat = "identity", alpha = 0.9) +  # Switch to "stack" for raw counts
+      geom_text(aes(label = votes), position = position_stack(vjust = 0.5), color = "white") +  # Add labels to each part of the bar
+      theme_minimal() +
+      scale_fill_brewer(
+        palette = "Set1",
+        labels = c(
+          "insta" = "Instagram Default",
+          "desc" = "Content Description",
+          "warn" = "Trigger Warnings",
+          "draw" = "Drawing Filter"
+        )
+      ) +
+      scale_x_discrete(labels = c(
+        "rank 1" = "1st Choice",
+        "rank 2" = "2nd Choice",
+        "rank 3" = "3rd Choice",
+        "rank 4" = "4th Choice"
+      )) +
+      labs(fill = "", x = "Ranking", y = "Votes")
+    return(plot)
+  }
 
 get_clic_histogram_plot <- function(df) {
   data_long <- get_clic_long_data(df)
   
-  plot <- histogram <- ggplot(data_long, aes(x = score)) +
-    geom_histogram(binwidth = 1, fill = "skyblue", color = "black", alpha = 0.7) +
-    facet_wrap(~prototype) +
-    theme_minimal() +
-    labs(title = "Histogram of Scores by Prototype", x = "Score", y = "Frequency")
+  # Define label replacements
+  prototype_labels <- c(
+    "baselineClic" = "Baseline",
+    "descClic" = "Content Description",
+    "warnClic" = "Trigger Warnings",
+    "drawingClic" = "Drawing Filter"
+  )
   
+  plot <- histogram <- ggplot(data_long, aes(x = score, fill = prototype)) +
+    geom_histogram(binwidth = 1, color = "black", alpha = 0.7) +
+    facet_wrap(~prototype, labeller = as_labeller(prototype_labels)) +
+    theme_minimal() +
+    scale_fill_brewer(palette = "Set1") +
+    labs(x = "Web-CLIC Score", y = "Frequency") +
+    theme(legend.position = "none")
   return(plot)
 }
 
@@ -263,7 +312,8 @@ get_clic_qq_plot <- function(df) {
     facet_wrap(~prototype, labeller = as_labeller(prototype_labels)) +
     theme_minimal() +
     labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + 
-    scale_color_brewer(palette = "Set1")
+    scale_color_brewer(palette = "Set1") +
+    theme(legend.position = "none")
   return(plot)
 } 
   
@@ -271,7 +321,7 @@ get_clic_pairwise_prototype_plot <- function(df) {
   data_long <- get_clic_long_data(df)
   
   plot <- ggplot(data_long, aes(x = prototype, y = score, fill = prototype)) +
-    geom_boxplot(alpha = 0.6) +
+    geom_boxplot(alpha = 0.8) +
     geom_signif(comparisons = list(c("descClic", "baselineClic"), 
                                    c("drawingClic", "baselineClic"),
                                    c("drawingClic", "descClic"),
@@ -295,11 +345,17 @@ get_rank_coefficient_plot <- function(df) {
   normalized_weights <- get_rank_placketluce_coef_results(df)
   coefficients_df <- data.frame(prototype = names(normalized_weights), weight = normalized_weights)
   
-  plot <- ggplot(coefficients_df, aes(x = prototype, y = weight)) +
-    geom_bar(stat = "identity", fill = "skyblue") +
+  plot <- ggplot(coefficients_df, aes(x = prototype, y = weight, fill = prototype)) +
+    geom_bar(stat = "identity") +
     theme_minimal() +
     labs(title = "Prototype Preference Weights", x = "Prototype", y = "Normalized Weight") +
-    coord_flip()  # To flip the axes if you want a horizontal bar plot
+    coord_flip() +  # To flip the axes if you want a horizontal bar plot
+    scale_fill_brewer(palette = "Set1") +
+    scale_x_discrete(labels = c("insta" = "Baseline",
+                                "desc" = "Content Description",
+                                "warn" = "Trigger Warnings",
+                                "draw" = "Drawing Filter")) +
+    theme(legend.position = "none")
   return(plot)
 }
   
