@@ -157,12 +157,19 @@ get_clar_density_plot <- function(df) {
                  names_to = "score_type",
                  values_to = "score_value")
   
-  plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
-    geom_density(alpha = 0.4) +
-    theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Clarification Scores by Type") +
-    scale_fill_brewer(palette = "Set1")
+  # Define label mapping
+  label_map <- c(
+    "baselineClar" = "Baseline",
+    "descClar" = "Content Description",
+    "warnClar" = "Trigger Warnings",
+    "drawingClar" = "Drawing Filter"
+  )
   
+  plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
+    geom_density(alpha = 0.3) +
+    theme_minimal() +
+    labs(fill= "", x = "Web-CLIC Clarification Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map)
   return(plot)
 }
 
@@ -172,12 +179,18 @@ get_like_density_plot <- function(df) {
                  names_to = "score_type",
                  values_to = "score_value")
   
-  plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
-    geom_density(alpha = 0.4) +
-    theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Likability Scores by Type") +
-    scale_fill_brewer(palette = "Set1")
+  label_map <- c(
+    "baselineLike" = "Baseline",
+    "descLike" = "Content Description",
+    "warnLike" = "Trigger Warnings",
+    "drawingLike" = "Drawing Filter"
+  )
   
+  plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
+    geom_density(alpha = 0.3) +
+    theme_minimal() +
+    labs(fill = "", x = "Web-CLIC Likability Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map)
   return(plot)
 }
 
@@ -187,11 +200,18 @@ get_info_density_plot <- function(df) {
                  names_to = "score_type",
                  values_to = "score_value")
   
+  label_map <- c(
+    "baselineInfo" = "Baseline",
+    "descInfo" = "Content Description",
+    "warnInfo" = "Trigger Warnings",
+    "drawingInfo" = "Drawing Filter"
+  )
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
-    geom_density(alpha = 0.4) +
+    geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Informational Scores by Type") +
-    scale_fill_brewer(palette = "Pastel1")
+    labs(fill = "", x = "Web-CLIC Informativeness Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map)
   
   return(plot)
 }
@@ -202,11 +222,18 @@ get_cred_density_plot <- function(df) {
                  names_to = "score_type",
                  values_to = "score_value")
   
+  label_map <- c(
+    "baselineCred" = "Baseline",
+    "descCred" = "Content Description",
+    "warnCred" = "Trigger Warnings",
+    "drawingCred" = "Drawing Filter"
+  )
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
-    geom_density(alpha = 0.4) +
+    geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Credibility Scores by Type") +
-    scale_fill_brewer(palette = "Pastel1")
+    labs(fill = "", x = "Web-CLIC Credibility Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map)
   
   return(plot)
 }
@@ -217,62 +244,72 @@ get_clic_density_plot <- function(df) {
                  names_to = "score_type",
                  values_to = "score_value")
   
+  label_map <- c(
+    "baselineClic" = "Baseline",
+    "descClic" = "Content Description",
+    "warnClic" = "Trigger Warnings",
+    "drawingClic" = "Drawing Filter"
+  )
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
-    geom_density(alpha = 0.4) +
+    geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(x = "Score", y = "Density", title = "Density Plot of Overall Scores by Type") +
-    scale_fill_brewer(palette = "Pastel1")
+    labs(fill = "", x = "Web-CLIC Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map)
   
   return(plot)
 }
 
-  get_ranking_dist_plot <- function(df) {
-    # create a dataset
-    rank <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
-    condition <- rep(c("insta" , "desc" , "warn", "draw") , 4)
-    votes <- c(
-      table(df$ranking.1)["insta"],
-      table(df$ranking.1)["desc"],
-      table(df$ranking.1)["warn"],
-      table(df$ranking.1)["draw"],
-      table(df$ranking.2)["insta"],
-      table(df$ranking.2)["desc"],
-      table(df$ranking.2)["warn"],
-      table(df$ranking.2)["draw"],
-      table(df$ranking.3)["insta"],
-      table(df$ranking.3)["desc"],
-      table(df$ranking.3)["warn"],
-      table(df$ranking.3)["draw"],
-      table(df$ranking.4)["insta"],
-      table(df$ranking.4)["desc"],
-      table(df$ranking.4)["warn"],
-      table(df$ranking.4)["draw"]
-    )
-    data <- data.frame(rank,condition,votes)
-    
-    # Stacked + percent
-    plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
-      geom_bar(position = "stack", stat = "identity", alpha = 0.9) +  # Switch to "stack" for raw counts
-      geom_text(aes(label = votes), position = position_stack(vjust = 0.5), color = "white") +  # Add labels to each part of the bar
-      theme_minimal() +
-      scale_fill_brewer(
-        palette = "Set1",
-        labels = c(
-          "insta" = "Instagram Default",
-          "desc" = "Content Description",
-          "warn" = "Trigger Warnings",
-          "draw" = "Drawing Filter"
-        )
-      ) +
-      scale_x_discrete(labels = c(
-        "rank 1" = "1st Choice",
-        "rank 2" = "2nd Choice",
-        "rank 3" = "3rd Choice",
-        "rank 4" = "4th Choice"
-      )) +
-      labs(fill = "", x = "Ranking", y = "Votes")
-    return(plot)
-  }
+get_ranking_dist_plot <- function(df) {
+  # create a dataset
+  rank <- c(rep("rank 1" , 4) , rep("rank 2" , 4) , rep("rank 3" , 4) , rep("rank 4" , 4) )
+  condition <- rep(c("insta" , "desc" , "warn", "draw") , 4)
+  votes <- c(
+    table(df$ranking.1)["insta"],
+    table(df$ranking.1)["desc"],
+    table(df$ranking.1)["warn"],
+    table(df$ranking.1)["draw"],
+    table(df$ranking.2)["insta"],
+    table(df$ranking.2)["desc"],
+    table(df$ranking.2)["warn"],
+    table(df$ranking.2)["draw"],
+    table(df$ranking.3)["insta"],
+    table(df$ranking.3)["desc"],
+    table(df$ranking.3)["warn"],
+    table(df$ranking.3)["draw"],
+    table(df$ranking.4)["insta"],
+    table(df$ranking.4)["desc"],
+    table(df$ranking.4)["warn"],
+    table(df$ranking.4)["draw"]
+  )
+  data <- data.frame(rank,condition,votes)
+  
+  # Set desired fill order
+  data$condition <- factor(data$condition, levels = c("insta", "desc", "draw", "warn"))
+  
+  # Stacked + percent
+  plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
+    geom_bar(position = "stack", stat = "identity", alpha = 0.8) +  # Switch to "stack" for raw counts
+    geom_text(aes(label = votes), position = position_stack(vjust = 0.5), color = "white") +  # Add labels to each part of the bar
+    theme_minimal() +
+    scale_fill_brewer(
+      palette = "Set1",
+      labels = c(
+        "insta" = "Baseline",
+        "desc" = "Content Description",
+        "warn" = "Trigger Warnings",
+        "draw" = "Drawing Filter"
+      )
+    ) +
+    scale_x_discrete(labels = c(
+      "rank 1" = "1st Choice",
+      "rank 2" = "2nd Choice",
+      "rank 3" = "3rd Choice",
+      "rank 4" = "4th Choice"
+    )) +
+    labs(fill = "", x = "Ranking", y = "Votes")
+  return(plot)
+}
 
 get_clic_histogram_plot <- function(df) {
   data_long <- get_clic_long_data(df)
@@ -345,10 +382,14 @@ get_rank_coefficient_plot <- function(df) {
   normalized_weights <- get_rank_placketluce_coef_results(df)
   coefficients_df <- data.frame(prototype = names(normalized_weights), weight = normalized_weights)
   
+  # Set desired order of prototypes
+  coefficients_df$prototype <- factor(coefficients_df$prototype,
+                                      levels = c("insta", "desc","draw", "warn"))
+  
   plot <- ggplot(coefficients_df, aes(x = prototype, y = weight, fill = prototype)) +
-    geom_bar(stat = "identity") +
+    geom_bar(stat = "identity", alpha = 0.8) +
     theme_minimal() +
-    labs(title = "Prototype Preference Weights", x = "Prototype", y = "Normalized Weight") +
+    labs(x = "", y = "Normalized Weight (Ranking)") +
     coord_flip() +  # To flip the axes if you want a horizontal bar plot
     scale_fill_brewer(palette = "Set1") +
     scale_x_discrete(labels = c("insta" = "Baseline",
