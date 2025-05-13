@@ -60,13 +60,26 @@ get_education_level_dist_plot <- function(df) {
     group_by(education) %>%
     summarise(count = n())
   
-  plot <- ggplot(education_counts, aes(x = education, y = count)) +
-    geom_bar(stat = "identity", fill = "skyblue") +
+  # Define label replacements
+  education_labels <- c(
+    "bache" = "Bachelor's Degree",
+    "gym" = "High School",
+    "mast" = "Master's Degree",
+    "-oth-" = "Other"
+  )
+  
+  plot <- ggplot(education_counts, aes(x = education, y = count, fill = education)) +
+    geom_bar(stat = "identity", alpha = 0.9) +
     geom_text(aes(label = count), vjust = -0.5) +
-    labs(title = "Education Level Distribution of Participants", 
-         x = "Education Level", 
-         y = "Number of Participants") +
-    theme_minimal()
+    labs(x = "Education Level", 
+         y = "Number of Participants", 
+         fill = "") +
+    scale_fill_brewer(palette = "Set2", labels = education_labels) +
+    scale_x_discrete(labels = education_labels) +
+    theme_minimal() + 
+    theme(
+      axis.text.x = element_blank()
+    )
   return(plot)
 }
 
