@@ -14,8 +14,10 @@ library(ez)
 get_clic_long_data <- function(df) {
   data_long <- df %>%
     pivot_longer(cols = c("baselineClic", "descClic", "warnClic", "drawingClic"),  # select columns starting with 'clic'
-                 names_to = "prototype",      # name for prototype column
-                 values_to = "score")        # name for the score column
+                 names_to = "prototype",
+                 values_to = "score") %>%
+    mutate(prototype = factor(prototype,
+                              levels = c("baselineClic", "descClic", "warnClic", "drawingClic")))
   return(data_long)
 }
 
