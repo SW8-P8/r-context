@@ -152,12 +152,15 @@ get_ers_box_plot <- function(df) {
 }
 
 get_clar_density_plot <- function(df) {
+  library(dplyr)
+  library(ggplot2)
+  library(tidyr)
+  
   df_long <- df %>%
     pivot_longer(cols = c(baselineClar, descClar, warnClar, drawingClar),
                  names_to = "score_type",
                  values_to = "score_value")
   
-  # Define label mapping
   label_map <- c(
     "baselineClar" = "Baseline",
     "descClar" = "Content Description",
@@ -165,13 +168,24 @@ get_clar_density_plot <- function(df) {
     "drawingClar" = "Drawing Filter"
   )
   
+  means_df <- df_long %>%
+    group_by(score_type) %>%
+    summarize(mean_score = mean(score_value, na.rm = TRUE), .groups = "drop")
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
+    geom_vline(data = means_df,
+               aes(xintercept = mean_score, color = score_type),
+               linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 5.33, linetype = "dashed", color = "black", size = 1) +
     theme_minimal() +
-    labs(fill= "", x = "Web-CLIC Clarification Score", y = "Density") +
-    scale_fill_brewer(palette = "Set1", labels = label_map)
+    labs(fill = "", color = "", x = "Web-CLIC Clarification Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map) +
+    scale_color_brewer(palette = "Set1", labels = label_map)
+  
   return(plot)
 }
+
 
 get_like_density_plot <- function(df) {
   df_long <- df %>%
@@ -186,11 +200,20 @@ get_like_density_plot <- function(df) {
     "drawingLike" = "Drawing Filter"
   )
   
+  means_df <- df_long %>%
+    group_by(score_type) %>%
+    summarize(mean_score = mean(score_value, na.rm = TRUE), .groups = "drop")
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
+    geom_vline(data = means_df,
+               aes(xintercept = mean_score, color = score_type),
+               linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 4.00, linetype = "dashed", color = "black", size = 1) +
     theme_minimal() +
-    labs(fill = "", x = "Web-CLIC Likability Score", y = "Density") +
-    scale_fill_brewer(palette = "Set1", labels = label_map)
+    labs(fill = "", color = "", x = "Web-CLIC Likability Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map) +
+    scale_color_brewer(palette = "Set1", labels = label_map)
   return(plot)
 }
 
@@ -207,11 +230,20 @@ get_info_density_plot <- function(df) {
     "drawingInfo" = "Drawing Filter"
   )
   
+  means_df <- df_long %>%
+    group_by(score_type) %>%
+    summarize(mean_score = mean(score_value, na.rm = TRUE), .groups = "drop")
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
+    geom_vline(data = means_df,
+               aes(xintercept = mean_score, color = score_type),
+               linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 5.00, linetype = "dashed", color = "black", size = 1) +
     theme_minimal() +
-    labs(fill = "", x = "Web-CLIC Informativeness Score", y = "Density") +
-    scale_fill_brewer(palette = "Set1", labels = label_map)
+    labs(fill = "", color = "", x = "Web-CLIC Informativeness Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map) +
+    scale_color_brewer(palette = "Set1", labels = label_map)
   
   return(plot)
 }
@@ -229,11 +261,20 @@ get_cred_density_plot <- function(df) {
     "drawingCred" = "Drawing Filter"
   )
   
+  means_df <- df_long %>%
+    group_by(score_type) %>%
+    summarize(mean_score = mean(score_value, na.rm = TRUE), .groups = "drop")
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(fill = "", x = "Web-CLIC Credibility Score", y = "Density") +
-    scale_fill_brewer(palette = "Set1", labels = label_map)
+    geom_vline(data = means_df,
+               aes(xintercept = mean_score, color = score_type),
+               linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 4.67, linetype = "dashed", color = "black", size = 1) +
+    labs(fill = "", color = "", x = "Web-CLIC Credibility Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map) +
+    scale_color_brewer(palette = "Set1", labels = label_map)
   
   return(plot)
 }
@@ -251,11 +292,20 @@ get_clic_density_plot <- function(df) {
     "drawingClic" = "Drawing Filter"
   )
   
+  means_df <- df_long %>%
+    group_by(score_type) %>%
+    summarize(mean_score = mean(score_value, na.rm = TRUE), .groups = "drop")
+  
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(fill = "", x = "Web-CLIC Score", y = "Density") +
-    scale_fill_brewer(palette = "Set1", labels = label_map)
+    geom_vline(data = means_df,
+               aes(xintercept = mean_score, color = score_type),
+               linetype = "dashed", size = 1) +
+    geom_vline(xintercept = 4.58, linetype = "dashed", color = "black", size = 1) +
+    labs(fill = "", color = "", x = "Web-CLIC Score", y = "Density") +
+    scale_fill_brewer(palette = "Set1", labels = label_map) +
+    scale_color_brewer(palette = "Set1", labels = label_map)
   
   return(plot)
 }
@@ -369,6 +419,7 @@ get_clic_pairwise_prototype_plot <- function(df) {
     labs(x = "", y = "Web-CLIC Score") +
     theme_minimal() +
     geom_jitter(color="black", size=0.4, alpha=0.9) +
+    geom_hline(yintercept = 4.58, linetype = "dashed", color = "black", size=1) +
     theme(legend.position = "none") +
     scale_fill_brewer(palette = "Set1") + 
     scale_x_discrete(labels = c("baselineClic" = "Baseline",
