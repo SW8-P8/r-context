@@ -15,10 +15,9 @@ get_p_seq_dist_plot <- function(df) {
     summarise(count = n())
   
   plot <- ggplot(p_seq_counts, aes(x = factor(p_seq), y = count)) +
-    geom_bar(stat = "identity", fill = "skyblue") +
+    geom_bar(stat = "identity", fill = "#66c2a5", alpha = 0.8) +
     geom_text(aes(label = count), vjust = -0.5) +
-    labs(title = "Number of Participants in Each p-seq", 
-         x = "p-seq", 
+    labs(x = "p-seq", 
          y = "Number of Participants") +
     theme_minimal()
   
@@ -30,13 +29,23 @@ get_gender_dist_plot <- function(df) {
     group_by(gender) %>%
     summarise(count = n())
   
-  plot <- ggplot(gender_counts, aes(x = factor(gender), y = count)) +
-    geom_bar(stat = "identity", fill = "skyblue") +
+  # Define label replacements
+  gender_labels <- c(
+    "femal" = "Female",
+    "male" = "Male",
+    "-oth-" = "Other"
+  )
+  
+  plot <- ggplot(gender_counts, aes(x = factor(gender), y = count, fill = gender)) +
+    geom_bar(stat = "identity", alpha = 0.8) +
     geom_text(aes(label = count), vjust = -0.5) +
-    labs(title = "Gender Distribution of Participants", 
-         x = "Gender", 
-         y = "Amount") +
-    theme_minimal()
+    labs(x = "", 
+         y = "Number of Participants",
+         fill = "") +
+    scale_fill_brewer(palette = "Set2", labels = gender_labels) +
+    scale_x_discrete(labels = gender_labels) +
+    theme_minimal() + 
+    theme(legend.position = "none")
   return(plot)
 }
 
@@ -46,10 +55,9 @@ get_age_dist_plot <- function(df) {
     summarise(count = n())
   
   plot <- ggplot(age_counts, aes(x = age, y = count)) +
-    geom_bar(stat = "identity", fill = "skyblue") +
+    geom_bar(stat = "identity", fill = "#66c2a5", alpha = 0.9) +
     geom_text(aes(label = count), vjust = -0.5) +
-    labs(title = "Age Distribution of Participants", 
-         x = "Age", 
+    labs(x = "Age", 
          y = "Number of Participants") +
     theme_minimal()
   return(plot)
@@ -71,15 +79,13 @@ get_education_level_dist_plot <- function(df) {
   plot <- ggplot(education_counts, aes(x = education, y = count, fill = education)) +
     geom_bar(stat = "identity", alpha = 0.9) +
     geom_text(aes(label = count), vjust = -0.5) +
-    labs(x = "Education Level", 
+    labs(x = "", 
          y = "Number of Participants", 
          fill = "") +
     scale_fill_brewer(palette = "Set2", labels = education_labels) +
     scale_x_discrete(labels = education_labels) +
     theme_minimal() + 
-    theme(
-      axis.text.x = element_blank()
-    )
+    theme(legend.position = "none")
   return(plot)
 }
 
@@ -155,12 +161,23 @@ get_ers_box_plot <- function(df) {
                  values_to = "score_value") %>%
     mutate(score_type = factor(score_type, levels = c("sens", "arou", "pers", "ers")))
   
-  plot <- ggplot(df_long, aes(x = score_type, y = score_value)) +
-    geom_boxplot(fill = "skyblue") +
-    labs(title = "Distribution of Scores",
-         x = "Score Type",
-         y = "Score Value")
+  # Define label replacements
+  score_labels <- c(
+    "sens" = "Sensitivity",
+    "arou" = "Arousal",
+    "pers" = "Personalisation",
+    "ers"  = "ERS"
+  )
   
+  plot <- ggplot(df_long, aes(x = score_type, y = score_value, fill = score_type)) +
+    geom_boxplot(alpha = 0.8) +
+    labs(x = "",
+         y = "Normalised Score",
+         fill = "") +
+    scale_x_discrete(labels = score_labels) +
+    scale_fill_brewer(palette = "Set2", labels = score_labels) +
+    theme_minimal() +
+    theme(legend.position = "none")
   return(plot)
 }
 
@@ -181,7 +198,7 @@ get_clar_density_plot <- function(df) {
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(fill= "", x = "Web-CLIC Clarification Score", y = "Density") +
+    labs(fill= "", x = "Web-CLIC Clarity Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map)
   return(plot)
 }
@@ -202,7 +219,7 @@ get_like_density_plot <- function(df) {
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
     theme_minimal() +
-    labs(fill = "", x = "Web-CLIC Likability Score", y = "Density") +
+    labs(fill = "", x = "Web-CLIC Likeability Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map)
   return(plot)
 }
@@ -247,7 +264,6 @@ get_cred_density_plot <- function(df) {
     theme_minimal() +
     labs(fill = "", x = "Web-CLIC Credibility Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map)
-  
   return(plot)
 }
 
@@ -402,7 +418,7 @@ get_rank_coefficient_plot <- function(df) {
   plot <- ggplot(coefficients_df, aes(x = prototype, y = weight, fill = prototype)) +
     geom_bar(stat = "identity", alpha = 0.8) +
     theme_minimal() +
-    labs(x = "", y = "Normalized Weight (Ranking)") +
+    labs(x = "", y = "Normalised Weight (Ranking)") +
     coord_flip() +  # To flip the axes if you want a horizontal bar plot
     scale_fill_brewer(palette = "Set1") +
     scale_x_discrete(labels = c("insta" = "Baseline",
