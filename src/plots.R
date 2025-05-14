@@ -347,7 +347,7 @@ get_ranking_dist_plot <- function(df) {
   data <- data.frame(rank,condition,votes)
   
   # Set desired fill order
-  data$condition <- factor(data$condition, levels = c("insta", "desc", "draw", "warn"))
+  data$condition <- factor(data$condition, levels = c("insta", "desc", "warn", "draw"))
   
   # Stacked + percent
   plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
@@ -447,7 +447,7 @@ get_rank_coefficient_plot <- function(df) {
   
   # Set desired order of prototypes
   coefficients_df$prototype <- factor(coefficients_df$prototype,
-                                      levels = c("insta", "desc","draw", "warn"))
+                                      levels = c("insta", "desc","warn", "draw"))
   
   plot <- ggplot(coefficients_df, aes(x = prototype, y = weight, fill = prototype)) +
     geom_bar(stat = "identity", alpha = 0.8) +
