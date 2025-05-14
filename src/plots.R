@@ -155,11 +155,14 @@ get_clar_density_plot <- function(df) {
   library(dplyr)
   library(ggplot2)
   library(tidyr)
+
   
   df_long <- df %>%
     pivot_longer(cols = c(baselineClar, descClar, warnClar, drawingClar),
                  names_to = "score_type",
-                 values_to = "score_value")
+                 values_to = "score_value") %>%
+    mutate(score_type = factor(score_type,
+                            levels = c("baselineClar", "descClar", "warnClar", "drawingClar")))
   
   label_map <- c(
     "baselineClar" = "Baseline",
@@ -191,7 +194,9 @@ get_like_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineLike, descLike, warnLike, drawingLike),
                  names_to = "score_type",
-                 values_to = "score_value")
+                 values_to = "score_value") %>%
+    mutate(score_type = factor(score_type,
+                              levels = c("baselineLike", "descLike", "warnLike", "drawingLike")))
   
   label_map <- c(
     "baselineLike" = "Baseline",
@@ -221,7 +226,10 @@ get_info_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineInfo, descInfo, warnInfo, drawingInfo),
                  names_to = "score_type",
-                 values_to = "score_value")
+                 values_to = "score_value") %>%
+    mutate(score_type = factor(score_type,
+                              levels = c("baselineInfo", "descInfo", "warnInfo", "drawingInfo")))
+  
   
   label_map <- c(
     "baselineInfo" = "Baseline",
@@ -252,7 +260,9 @@ get_cred_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineCred, descCred, warnCred, drawingCred),
                  names_to = "score_type",
-                 values_to = "score_value")
+                 values_to = "score_value") %>%
+    mutate(score_type = factor(score_type,
+                              levels = c("baselineCred", "descCred", "warnCred", "drawingCred")))
   
   label_map <- c(
     "baselineCred" = "Baseline",
@@ -283,7 +293,9 @@ get_clic_density_plot <- function(df) {
   df_long <- df %>%
     pivot_longer(cols = c(baselineClic, descClic, warnClic, drawingClic),
                  names_to = "score_type",
-                 values_to = "score_value")
+                 values_to = "score_value") %>%
+    mutate(score_type = factor(score_type,
+                              levels = c("baselineClic", "descClic", "warnClic", "drawingClic")))
   
   label_map <- c(
     "baselineClic" = "Baseline",
