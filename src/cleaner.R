@@ -4,6 +4,8 @@ library(rlang)
 library(ez)
 
 filter_responses <- function(df) {
+  df <- df %>% drop_na(lastpage)
+  
   first_check_passed <- !is.na(df$sensitivity2.sensAttentionCheck.) & df$sensitivity2.sensAttentionCheck. == 4
   
   second_check_passed <- (
@@ -24,7 +26,8 @@ filter_responses <- function(df) {
     valid = df[first_check_passed & second_check_passed & completed & before_survey_cutoff,],
     almost_valid = df[(first_check_passed & second_check_passed & !completed) | (first_check_passed & second_check_passed & !before_survey_cutoff),],
     semi_valid = df[first_check_passed != second_check_passed,],
-    invalid = df[!(first_check_passed | second_check_passed),]
+    invalid = df[!(first_check_passed | second_check_passed),],
+    completed_in_time = df[completed & before_survey_cutoff,]
   )
 }
 
