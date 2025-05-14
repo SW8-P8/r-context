@@ -36,8 +36,8 @@ get_gender_dist_plot <- function(df) {
     "-oth-" = "Other"
   )
   
-  plot <- ggplot(gender_counts, aes(x = factor(gender), y = count, fill = gender)) +
-    geom_bar(stat = "identity", alpha = 0.8) +
+  plot <- ggplot(gender_counts, aes(x = factor(gender), y = count)) +
+    geom_bar(stat = "identity", fill = "#66c2a5", alpha = 0.8) +
     geom_text(aes(label = count), vjust = -0.5) +
     labs(x = "", 
          y = "Number of Participants",
@@ -76,8 +76,8 @@ get_education_level_dist_plot <- function(df) {
     "-oth-" = "Other"
   )
   
-  plot <- ggplot(education_counts, aes(x = education, y = count, fill = education)) +
-    geom_bar(stat = "identity", alpha = 0.9) +
+  plot <- ggplot(education_counts, aes(x = education, y = count)) +
+    geom_bar(stat = "identity", fill = "#66c2a5", alpha = 0.9) +
     geom_text(aes(label = count), vjust = -0.5) +
     labs(x = "", 
          y = "Number of Participants", 
