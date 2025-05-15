@@ -150,14 +150,7 @@ get_rank_placketluce_results <- function(df) {
 get_rank_placketluce_coef_results <- function(df) {
   rank_matrix <- get_rank_matrix_data(df)
   pl_model <- PlackettLuce(rank_matrix)
-  # Extract coefficients
-  coefficients <- coef(pl_model)
-  
-  # Exponentiate the coefficients to get odds ratios
-  odds_ratios <- exp(coefficients)
-  
-  # Normalize the odds ratios to sum to 1
-  normalized_weights <- odds_ratios / sum(odds_ratios)
+  normalized_weights <- coef(pl_model, log=FALSE)
 
   return(normalized_weights)
 }
@@ -241,4 +234,23 @@ get_combined_clic_model <- function(df) {
   return(model_summary)
 }
 
+get_sens_info_data <- function(df) {
+  data <- df %>%
+    mutate(infoscore_rank1 = case_when(
+      ranking.1. == "insta" ~ baselineInfo,
+      ranking.1. == "desc" ~ descInfo,
+      ranking.1. == "draw" ~ drawingInfo,
+      ranking.1. == "warn" ~ warnInfo,
+      TRUE ~ NA_real_  # in case of unexpected values
+    ))
+  return(data)
+}
+
+
+get_spearman_sens_info_results <- function(df) {
+  data <- get_sens_info_data(df)
+  result <- cor.test(data$sens, data$infoscore_rank1, method = "spearman")
+  
+  return(result)
+}
 

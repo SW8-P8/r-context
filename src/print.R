@@ -60,4 +60,15 @@ print(get_rank_placketluce_coef_results(data))
 
 #######################################################
 
+# RANK-CLIC polr
 print(get_clic_impact_on_rank_tex(data))
+
+#######################################################
+
+# INFO-SENS correlation
+print(get_correlation_sens_info_plot(data))
+
+# INFO-SENS spearman
+print(get_spearman_sens_info_results(data))
+
+

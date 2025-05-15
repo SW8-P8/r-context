@@ -462,4 +462,15 @@ get_rank_coefficient_plot <- function(df) {
     theme(legend.position = "none")
   return(plot)
 }
+
+get_correlation_sens_info_plot <- function(df) {
+  data <- get_sens_info_data(df)
+  
+  plot <- ggplot(data, aes(y=infoscore_rank1, x=sens)) +
+    geom_point() +
+    geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+    theme_ipsum()
+  
+  return(plot)
+}
   
