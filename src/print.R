@@ -61,7 +61,8 @@ print(get_rank_placketluce_coef_results(data))
 #######################################################
 
 # RANK-CLIC polr
-print(get_clic_impact_on_rank_tex(data))
+print(get_rank_clic_polr_results(data))
+print(get_rank_clic_polr_tex(data))
 
 #######################################################
 
