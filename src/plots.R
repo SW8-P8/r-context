@@ -445,6 +445,7 @@ get_rank_coefficient_plot <- function(df) {
   normalized_weights <- get_rank_placketluce_coef_results(df)
   coefficients_df <- data.frame(prototype = names(normalized_weights), weight = normalized_weights)
   
+  
   # Set desired order of prototypes
   coefficients_df$prototype <- factor(coefficients_df$prototype,
                                       levels = c("insta", "desc","warn", "draw"))

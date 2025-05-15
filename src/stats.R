@@ -106,7 +106,8 @@ get_rank_long_data <- function(df) {
 }
 
 get_rank_matrix_data <- function(df) {
-  rank_long <- get_rank_long_data(df)
+  rank_long <- get_rank_long_data(df)   %>%
+    dplyr::select(id, p_seq, prototype, rank)
   rank_matrix <- rank_long %>%
     pivot_wider(names_from = prototype, values_from = rank) %>%
     dplyr::select(-id, -p_seq)
@@ -148,6 +149,7 @@ get_rank_placketluce_results <- function(df) {
 
 get_rank_placketluce_coef_results <- function(df) {
   rank_matrix <- get_rank_matrix_data(df)
+  view(rank_matrix)
   pl_model <- PlackettLuce(rank_matrix)
   normalized_weights <- coef(pl_model, log=FALSE)
 
