@@ -29,6 +29,5 @@ upload_plot(get_ranking_dist_plot(cleaned_valid), save_dir, "ranking_dist.png", 
 upload_plot(get_correlation_sens_info_plot(cleaned_valid), save_dir, "correlation_sens_info.png", server_url)
 
 upload_tex(get_clic_repeated_measures_anova_tex(cleaned_valid), save_dir, "clic_anova.tex", server_url)
-upload_tex(get_clic_impact_on_rank_tex(cleaned_valid), save_dir, "clic_impact_rank.tex", server_url)
+upload_tex(get_rank_clic_polr_tex(cleaned_valid), save_dir, "clic_impact_rank.tex", server_url)
 upload_tex(get_clic_pairwise_prototype_t_test_tex(cleaned_valid), save_dir, "clic_pairwise_t_test.tex", server_url)
-upload_tex(get_clic_impact_on_rank_tex(cleaned_valid), save_dir, "clic_impact_on_rank.tex", server_url)
