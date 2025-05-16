@@ -427,11 +427,12 @@ get_clic_pairwise_prototype_plot <- function(df) {
                                    c("warnClic", "baselineClic"),
                                    c("warnClic", "descClic"),
                                    c("warnClic", "drawingClic")),
-                map_signif_level = TRUE) +  # Adds significance markers
+                map_signif_level = TRUE) +
+    stat_summary(fun = mean, geom = "crossbar", width = 0.5, color = "white", size = 0.3) +  # Mean line per box
     labs(x = "", y = "Web-CLIC Score") +
     theme_minimal() +
-    geom_jitter(color="black", size=0.4, alpha=0.9) +
-    geom_hline(yintercept = 4.58, linetype = "dashed", color = "black", size=1) +
+    geom_jitter(color = "black", size = 0.4, alpha = 0.9) +
+    geom_hline(yintercept = 4.58, linetype = "dashed", color = "black", size = 1) +
     theme(legend.position = "none") +
     scale_fill_brewer(palette = "Set1") + 
     scale_x_discrete(labels = c("baselineClic" = "Baseline",
@@ -440,6 +441,7 @@ get_clic_pairwise_prototype_plot <- function(df) {
                                 "drawingClic" = "Drawing Filter"))
   return(plot)
 }
+
 
 get_rank_coefficient_plot <- function(df) {
   normalized_weights <- get_rank_placketluce_coef_results(df)
