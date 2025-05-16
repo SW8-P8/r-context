@@ -24,6 +24,7 @@ upload_plot(get_like_density_plot(cleaned_valid), save_dir, "like_density_plot.p
 upload_plot(get_info_density_plot(cleaned_valid), save_dir, "info_density_plot.png", server_url)
 upload_plot(get_cred_density_plot(cleaned_valid), save_dir, "cred_density_plot.png", server_url)
 upload_plot(get_clic_density_plot(cleaned_valid), save_dir, "clic_density_plot.png", server_url)
+upload_plot(get_combined_clic_density_plot(cleaned_valid), save_dir, "combined_clic_density_plot.png", server_url)
 upload_plot(get_clic_pairwise_prototype_plot(cleaned_valid), save_dir, "clic_pairwise_prototype_plot.png", server_url)
 upload_plot(get_ranking_dist_plot(cleaned_valid), save_dir, "ranking_dist.png", server_url)
 upload_plot(get_correlation_sens_info_plot(cleaned_valid), save_dir, "correlation_sens_info.png", server_url)

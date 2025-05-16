@@ -474,4 +474,79 @@ get_correlation_sens_info_plot <- function(df) {
   
   return(plot)
 }
+
+
+get_combined_clic_density_plot <- function(df) {
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  
+  # Reshape and label data
+  df_long <- df %>%
+    pivot_longer(
+      cols = c(baselineClar, descClar, warnClar, drawingClar,
+               baselineLike, descLike, warnLike, drawingLike,
+               baselineInfo, descInfo, warnInfo, drawingInfo,
+               baselineCred, descCred, warnCred, drawingCred),
+      names_to = c("prototype", "dimension"),
+      names_pattern = "(baseline|desc|warn|drawing)(Clar|Like|Info|Cred)",
+      values_to = "score"
+    ) %>%
+    mutate(
+      prototype = factor(prototype, levels = c("baseline", "desc", "warn", "drawing")),
+      dimension = case_when(
+        dimension == "Clar" ~ "Clarification",
+        dimension == "Like" ~ "Likability",
+        dimension == "Info" ~ "Informativeness",
+        dimension == "Cred" ~ "Credibility"
+      ),
+      prototype_label = case_when(
+        prototype == "baseline" ~ "Baseline",
+        prototype == "desc" ~ "Content Description",
+        prototype == "warn" ~ "Trigger Warnings",
+        prototype == "drawing" ~ "Drawing Filter"
+      ),
+      prototype_label = factor(
+        prototype_label,
+        levels = c("Baseline", "Content Description", "Trigger Warnings", "Drawing Filter")
+      )
+    )
+  
+  # Compute means
+  means_df <- df_long %>%
+    group_by(dimension, prototype_label) %>%
+    summarize(mean_score = mean(score, na.rm = TRUE), .groups = "drop")
+  
+  # Define benchmark lines
+  benchmark_lines <- data.frame(
+    dimension = c("Clarification", "Likability", "Informativeness", "Credibility"),
+    benchmark = c(5.33, 4.00, 5.00, 4.67)
+  )
+  
+  # Join benchmark
+  df_long <- left_join(df_long, benchmark_lines, by = "dimension")
+  
+  # Plot
+  plot <- ggplot(df_long, aes(x = score, fill = prototype_label)) +
+    geom_density(alpha = 0.3) +
+    geom_vline(data = means_df,
+               aes(xintercept = mean_score, color = prototype_label),
+               linetype = "dashed", size = 0.5) +
+    geom_vline(aes(xintercept = benchmark),
+               linetype = "dashed", color = "black", size = 0.5) +
+    facet_wrap(~dimension, scales = "free", ncol = 2) +
+    theme_minimal() +
+    labs(x = "Web-CLIC Score", y = "Density", fill = "", color = "") +
+    scale_fill_brewer(palette = "Set1") +
+    scale_color_brewer(palette = "Set1") +
+    theme(
+      legend.position = "bottom",
+      legend.direction = "horizontal",
+      legend.box = "horizontal"
+    )
+  
+  return(plot)
+}
+
+
   

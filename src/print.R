@@ -16,6 +16,7 @@ print(get_like_density_plot(data))
 print(get_info_density_plot(data))
 print(get_cred_density_plot(data))
 print(get_clic_density_plot(data))
+print(get_combined_clic_density_plot(data))
 print(get_ranking_dist_plot(data))
 print(get_rank_coefficient_plot(data))
 
