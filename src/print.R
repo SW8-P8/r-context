@@ -34,9 +34,15 @@ print(get_clic_qq_plot(data))
 # Homogeneity of variance
 print(get_clic_levenes_results(data))
 
+# CLIC descriptive
+print(get_clic_descriptive_stats_results(data))
+print(get_clic_descriptive_stats_tex(data))
+
 # CLIC ANOVA
 print(get_clic_repeated_measures_anova_results(data))
 print(get_clic_repeated_measures_anova_tex(data))
+print(get_clic_tukey_tex(data))
+print(get_clic_tukey_results(data))
 
 # CLIC pairwise t test
 print(get_clic_pairwise_prototype_t_test_results(data))

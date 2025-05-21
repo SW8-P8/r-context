@@ -36,6 +36,53 @@ get_clic_pairwise_prototype_t_test_tex <- function(df) {
 return(paste(latex_str, collapse = "\n"))
 }
 
+get_clic_descriptive_stats_tex <- function(df) {
+  results <- get_clic_descriptive_stats_results(df)
+  
+  # Convert to LaTeX
+  latex_str <- capture.output(
+    print(
+      xtable(results, caption = "Descriptive statistics by prototype", label = "tab:descriptive_stats"),
+      type = "latex",
+      include.rownames = FALSE,
+      floating = FALSE
+    )
+  )
+  
+  return(paste(latex_str, collapse = "\n"))
+}
+
+get_clic_tukey_tex <- function(df) {
+  # Run ANOVA and get pairwise emmeans contrast results
+  anova_results <- get_clic_repeated_measures_anova_results(df)
+  data_long <- get_clic_long_data(df)
+  
+  library(emmeans)
+  emm <- emmeans(anova_results, ~ prototype)
+  pairwise_results <- contrast(emm, method = "pairwise", adjust = "tukey")
+  
+  # Convert to data frame
+  pairwise_df <- as.data.frame(summary(pairwise_results))
+  
+  # Optional: clean up column names and round values
+  colnames(pairwise_df) <- c("Comparison", "Estimate", "SE", "df", "t", "p.value")
+  pairwise_df <- pairwise_df %>%
+    dplyr::mutate(
+      Estimate = round(Estimate, 3),
+      SE = round(SE, 3),
+      t = round(t, 2),
+      p.value = ifelse(p.value < 0.001, "< 0.001", round(p.value, 3))
+    )
+  
+  # Convert to LaTeX table
+  latex_str <- capture.output(
+    print(xtable(pairwise_df), type = "latex", include.rownames = FALSE, floating = FALSE)
+  )
+  
+  return(paste(latex_str, collapse = "\n"))
+}
+
+
 get_rank_clic_polr_tex <- function(df){
   combined_results <- get_rank_clic_polr_results(df)
   results_df <- combined_results[!rownames(combined_results) %in% c("4|3", "3|2", "2|1"), ]  

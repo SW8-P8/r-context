@@ -10,6 +10,7 @@ library(ARTool)
 library(PlackettLuce)
 library(nortest)
 library(ez)
+library(emmeans)
 
 get_clic_long_data <- function(df) {
   data_long <- df %>%
@@ -82,6 +83,34 @@ get_clic_repeated_measures_anova_results <- function(df) {
   return(anova_results)
 }
 
+get_clic_descriptive_stats_results <- function(df) {
+  data_long <- get_clic_long_data(df)
+  
+  prototype_descriptives <- data_long %>%
+    group_by(prototype) %>%
+    summarise(
+      mean = round(mean(score, na.rm = TRUE), 2),
+      sd = round(sd(score, na.rm = TRUE), 2),
+      min = round(min(score, na.rm = TRUE), 2),
+      max = round(max(score, na.rm = TRUE), 2)
+    )
+  
+  return(prototype_descriptives)
+}
+
+get_clic_tukey_results <- function(df) {
+  anova_results <- get_clic_repeated_measures_anova_results(df)
+  
+  emm <- emmeans(anova_results, ~ prototype)
+  pairwise_results <- contrast(emm, method = "pairwise", adjust = "tukey")
+  
+  print(pairwise_results)
+  
+  return(anova_results)
+}
+
+
+
 get_clic_pairwise_prototype_t_test_results <- function(df) {
   data_long <- get_clic_long_data(df)
   pairwise_results <- pairwise.t.test(data_long$score, data_long$prototype, p.adjust.method = "bonferroni")
@@ -106,11 +135,13 @@ get_rank_long_data <- function(df) {
 }
 
 get_rank_matrix_data <- function(df) {
-  rank_long <- get_rank_long_data(df)   %>%
+  rank_long <- get_rank_long_data(df) %>%
     dplyr::select(id, p_seq, prototype, rank)
+  
   rank_matrix <- rank_long %>%
-    pivot_wider(names_from = prototype, values_from = rank) %>%
-    dplyr::select(-id, -p_seq)
+    tidyr::pivot_wider(names_from = prototype, values_from = rank) %>%
+    dplyr::select(insta, desc, warn, draw)
+  
   return(rank_matrix)
 }
 
