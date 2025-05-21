@@ -104,9 +104,7 @@ get_clic_tukey_results <- function(df) {
   emm <- emmeans(anova_results, ~ prototype)
   pairwise_results <- contrast(emm, method = "pairwise", adjust = "tukey")
   
-  print(pairwise_results)
-  
-  return(anova_results)
+  return(pairwise_results)
 }
 
 

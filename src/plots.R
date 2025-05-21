@@ -20,7 +20,7 @@ get_p_seq_dist_plot <- function(df) {
     labs(title = "Number of Participants in Each p-seq", 
          x = "p-seq", 
          y = "Number of Participants") +
-    theme_ipsum()
+    theme_minimal()
   
   return(plot)
 }
@@ -36,7 +36,7 @@ get_gender_dist_plot <- function(df) {
     labs(title = "Gender Distribution of Participants", 
          x = "Gender", 
          y = "Amount") +
-    theme_ipsum()
+    theme_minimal()
   return(plot)
 }
 
@@ -51,7 +51,7 @@ get_age_dist_plot <- function(df) {
     labs(title = "Age Distribution of Participants", 
          x = "Age", 
          y = "Number of Participants") +
-    theme_ipsum()
+    theme_minimal()
   return(plot)
 }
 
@@ -66,7 +66,7 @@ get_education_level_dist_plot <- function(df) {
     labs(title = "Education Level Distribution of Participants", 
          x = "Education Level", 
          y = "Number of Participants") +
-    theme_ipsum()
+    theme_minimal()
   return(plot)
 }
 
@@ -148,7 +148,7 @@ get_ers_box_plot <- function(df) {
     geom_boxplot(alpha = 0.8, outlier.shape = NA, fill="skyblue") +
     geom_jitter(color = "black", size = 0.4, alpha = 0.9, width = 0.15) +
     labs(x = "", y = "Normalized ERS Score") +
-    theme_ipsum() +
+    theme_minimal() +
     theme(
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
@@ -188,7 +188,7 @@ get_clar_density_plot <- function(df) {
                aes(xintercept = mean_score, color = score_type),
                linetype = "dashed", size = 1) +
     geom_vline(xintercept = 5.33, linetype = "dashed", color = "black", size = 1) +
-    theme_ipsum() +
+    theme_minimal() +
     labs(fill = "", color = "", x = "Web-CLIC Clarification Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map) +
     scale_color_brewer(palette = "Set1", labels = label_map)
@@ -222,7 +222,7 @@ get_like_density_plot <- function(df) {
                aes(xintercept = mean_score, color = score_type),
                linetype = "dashed", size = 1) +
     geom_vline(xintercept = 4.00, linetype = "dashed", color = "black", size = 1) +
-    theme_ipsum() +
+    theme_minimal() +
     labs(fill = "", color = "", x = "Web-CLIC Likability Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map) +
     scale_color_brewer(palette = "Set1", labels = label_map)
@@ -255,7 +255,7 @@ get_info_density_plot <- function(df) {
                aes(xintercept = mean_score, color = score_type),
                linetype = "dashed", size = 1) +
     geom_vline(xintercept = 5.00, linetype = "dashed", color = "black", size = 1) +
-    theme_ipsum() +
+    theme_minimal() +
     labs(fill = "", color = "", x = "Web-CLIC Informativeness Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map) +
     scale_color_brewer(palette = "Set1", labels = label_map)
@@ -284,7 +284,7 @@ get_cred_density_plot <- function(df) {
   
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
-    theme_ipsum() +
+    theme_minimal() +
     geom_vline(data = means_df,
                aes(xintercept = mean_score, color = score_type),
                linetype = "dashed", size = 1) +
@@ -324,7 +324,7 @@ get_clic_density_plot <- function(df) {
     labs(fill = "", color = "", x = "Web-CLIC Score", y = "Density") +
     scale_fill_brewer(palette = "Set1", labels = label_map) +
     scale_color_brewer(palette = "Set1", labels = label_map) +
-    theme_ipsum() +
+    theme_minimal() +
     theme(
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
@@ -368,7 +368,7 @@ get_ranking_dist_plot <- function(df) {
   plot <- ggplot(data, aes(fill=condition, y=votes, x=rank)) + 
     geom_bar(position = "stack", stat = "identity", alpha = 0.8) +  # Switch to "stack" for raw counts
     geom_text(aes(label = votes), position = position_stack(vjust = 0.5), color = "white") +  # Add labels to each part of the bar
-    theme_ipsum() +
+    theme_minimal() +
     scale_fill_brewer(
       palette = "Set1",
       labels = c(
@@ -409,7 +409,7 @@ get_clic_histogram_plot <- function(df) {
   plot <- histogram <- ggplot(data_long, aes(x = score, fill = prototype)) +
     geom_histogram(binwidth = 1, color = "black", alpha = 0.7) +
     facet_wrap(~prototype, labeller = as_labeller(prototype_labels)) +
-    theme_ipsum() +
+    theme_minimal() +
     scale_fill_brewer(palette = "Set1") +
     labs(x = "Web-CLIC Score", y = "Frequency") +
     theme(legend.position = "none")
@@ -431,7 +431,7 @@ get_clic_qq_plot <- function(df) {
     stat_qq() + 
     stat_qq_line() +
     facet_wrap(~prototype, labeller = as_labeller(prototype_labels)) +
-    theme_ipsum() +
+    theme_minimal() +
     labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + 
     scale_color_brewer(palette = "Set1") +
     theme(legend.position = "none")
@@ -452,7 +452,7 @@ get_clic_pairwise_prototype_plot <- function(df) {
                 map_signif_level = TRUE) +
     stat_summary(fun = mean, geom = "crossbar", width = 0.5, color = "white", size = 0.3) +  # Mean line per box
     labs(x = "", y = "Web-CLIC Score") +
-    theme_ipsum() +
+    theme_minimal() +
     geom_jitter(color = "black", size = 0.4, alpha = 0.9) +
     geom_hline(yintercept = 4.58, linetype = "dashed", color = "black", size = 1) +
     theme(legend.position = "none") +
@@ -476,7 +476,7 @@ get_rank_coefficient_plot <- function(df) {
   
   plot <- ggplot(coefficients_df, aes(x = prototype, y = weight, fill = prototype)) +
     geom_bar(stat = "identity", alpha = 0.8) +
-    theme_ipsum() +
+    theme_minimal() +
     labs(x = "", y = "Normalized Weight (Ranking)") +
     coord_flip() +  # To flip the axes if you want a horizontal bar plot
     scale_fill_brewer(palette = "Set1") +
@@ -498,7 +498,7 @@ get_correlation_sens_info_plot <- function(df) {
       x = "Participant Sensitivity Score",
       y = "Informativeness Score of 1st Choice Prototype"
     ) +
-    theme_ipsum() +
+    theme_minimal() +
     theme(
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank()
@@ -566,7 +566,7 @@ get_combined_clic_density_plot <- function(df) {
     geom_vline(aes(xintercept = benchmark),
                linetype = "dashed", color = "black", size = 0.5) +
     facet_wrap(~dimension, scales = "free", ncol = 2) +
-    theme_ipsum() +
+    theme_minimal() +
     labs(x = "Web-CLIC Sub-Scores", y = "Density", fill = "", color = "") +
     scale_fill_brewer(palette = "Set1") +
     scale_color_brewer(palette = "Set1") +
