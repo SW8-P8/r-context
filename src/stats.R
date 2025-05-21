@@ -254,3 +254,12 @@ get_spearman_sens_info_results <- function(df) {
   return(result)
 }
 
+
+get_better_scs_results <- function(df) {
+  # Remove NA values before calculation
+  mean_val <- mean(df$`betterSCS.SQ001.`, na.rm = TRUE)
+  sd_val <- sd(df$`betterSCS.SQ001.`, na.rm = TRUE)
+  
+  results <- list(mean = mean_val, sd = sd_val)
+  return(results)
+}
