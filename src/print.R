@@ -62,6 +62,9 @@ print(get_rank_anova_results(data))
 # RANK wilcoxon
 print(get_rank_wilcoxon_results(data))
 
+# RANK 1 - ERS
+print(get_ers_rank_1_means_results(data))
+
 # RANK placketluce
 print(get_rank_placketluce_results(data))
 print(get_rank_placketluce_coef_results(data))

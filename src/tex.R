@@ -41,7 +41,7 @@ get_clic_descriptive_stats_tex <- function(df) {
   
   # Rename prototype values
   prototype_mapping <- c(
-    "baselineClic" = "Baseline",
+    "baselineClic" = "Instagram's Default",
     "descClic" = "Content Description",
     "warnClic" = "Trigger Warnings",
     "drawingClic" = "Drawing Filter"
@@ -81,7 +81,7 @@ get_clic_tukey_tex <- function(df) {
   
   # Replace prototype codes with 2-letter names in Comparison column
   replacements <- c(
-    "baselineClic" = "BL",
+    "baselineClic" = "ID",
     "descClic" = "CD",
     "warnClic" = "TW",
     "drawingClic" = "DF"

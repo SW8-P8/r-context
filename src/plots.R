@@ -214,7 +214,7 @@ get_like_density_plot <- function(df) {
   
   means_df <- df_long %>%
     group_by(score_type) %>%
-    summarize(mean_score = mean(score_value, na.rm = TRUE), .groups = "drop")
+    summarize(mean_score = mean(score_value, na.rm = TRUE),sd_score = sd(score_value, na.rm = TRUE), .groups = "drop")
   
   plot <- ggplot(df_long, aes(x = score_value, fill = score_type)) +
     geom_density(alpha = 0.3) +
@@ -305,7 +305,7 @@ get_clic_density_plot <- function(df) {
                                levels = c("baselineClic", "descClic", "warnClic", "drawingClic")))
   
   label_map <- c(
-    "baselineClic" = "Baseline",
+    "baselineClic" = "Instagram's Default",
     "descClic" = "Content Description",
     "warnClic" = "Trigger Warnings",
     "drawingClic" = "Drawing Filter"
@@ -372,7 +372,7 @@ get_ranking_dist_plot <- function(df) {
     scale_fill_brewer(
       palette = "Set1",
       labels = c(
-        "insta" = "Baseline",
+        "insta" = "Instagram's Default",
         "desc" = "Content Description",
         "warn" = "Trigger Warnings",
         "draw" = "Drawing Filter"

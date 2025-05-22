@@ -263,3 +263,19 @@ get_better_scs_results <- function(df) {
   results <- list(mean = mean_val, sd = sd_val)
   return(results)
 }
+
+get_ers_rank_1_means_results <- function(df) {
+  # Each participant has one ERS score — associate it with their first-ranked prototype
+  summary_stats <- df %>%
+    group_by(ranking.1.) %>%
+    summarise(
+      Mean = round(mean(ers, na.rm = TRUE), 2),
+      SD = round(sd(ers, na.rm = TRUE), 2),
+      .groups = "drop"
+    ) %>%
+    rename(rank_1_prototype = ranking.1.)
+  
+  return(summary_stats)
+}
+
+
