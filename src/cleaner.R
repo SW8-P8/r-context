@@ -58,11 +58,28 @@ remove_columns <- function(df, cols_to_remove) {
 
 clean_responses <- function(df) {
   df <- df %>% rename(p_seq = GROUP)
+  df <- add_duration_col(df)
   df <- clean_useless_cols(df)
   df <- clean_sensitivity_cols(df)
   df <- clean_prototype_cols(df)
   
   return(df)
+}
+
+add_duration_col <- function(df) {
+    if (!("submitdate" %in% names(df)) || !("startdate" %in% names(df))) {
+      df$duration <- NA_real_
+    } else {
+      df <- df %>%
+        mutate(
+          duration = ifelse(
+            is.na(submitdate) | is.na(startdate),
+            NA_real_,
+            round(as.numeric(difftime(submitdate, startdate, units = "mins")), 1)
+          )
+        )
+    }
+    return(df)
 }
 
 clean_useless_cols <- function(df) {
