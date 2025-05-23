@@ -10,12 +10,15 @@ library(ARTool)
 library(PlackettLuce)
 library(nortest)
 library(ez)
+library(emmeans)
 
 get_clic_long_data <- function(df) {
   data_long <- df %>%
     pivot_longer(cols = c("baselineClic", "descClic", "warnClic", "drawingClic"),  # select columns starting with 'clic'
-                 names_to = "prototype",      # name for prototype column
-                 values_to = "score")        # name for the score column
+                 names_to = "prototype",
+                 values_to = "score") %>%
+    mutate(prototype = factor(prototype,
+                              levels = c("baselineClic", "descClic", "warnClic", "drawingClic")))
   return(data_long)
 }
 
@@ -80,6 +83,32 @@ get_clic_repeated_measures_anova_results <- function(df) {
   return(anova_results)
 }
 
+get_clic_descriptive_stats_results <- function(df) {
+  data_long <- get_clic_long_data(df)
+  
+  prototype_descriptives <- data_long %>%
+    group_by(prototype) %>%
+    summarise(
+      mean = round(mean(score, na.rm = TRUE), 2),
+      sd = round(sd(score, na.rm = TRUE), 2),
+      min = round(min(score, na.rm = TRUE), 2),
+      max = round(max(score, na.rm = TRUE), 2)
+    )
+  
+  return(prototype_descriptives)
+}
+
+get_clic_tukey_results <- function(df) {
+  anova_results <- get_clic_repeated_measures_anova_results(df)
+  
+  emm <- emmeans(anova_results, ~ prototype)
+  pairwise_results <- contrast(emm, method = "pairwise", adjust = "tukey")
+  
+  return(pairwise_results)
+}
+
+
+
 get_clic_pairwise_prototype_t_test_results <- function(df) {
   data_long <- get_clic_long_data(df)
   pairwise_results <- pairwise.t.test(data_long$score, data_long$prototype, p.adjust.method = "bonferroni")
@@ -99,16 +128,18 @@ get_rank_long_data <- function(df) {
     pivot_longer(cols = c("ranking.1.", "ranking.2.", "ranking.3.", "ranking.4."),
                  names_to = "rank_position",
                  values_to = "prototype") %>%
-    mutate(rank = as.numeric(gsub("ranking\\.", "", rank_position))) %>%
-    dplyr::select(id, p_seq, prototype, rank)
+    mutate(rank = as.numeric(gsub("ranking\\.", "", rank_position)))
   return(rank_long)
 }
 
 get_rank_matrix_data <- function(df) {
-  rank_long <- get_rank_long_data(df)
+  rank_long <- get_rank_long_data(df) %>%
+    dplyr::select(id, p_seq, prototype, rank)
+  
   rank_matrix <- rank_long %>%
-    pivot_wider(names_from = prototype, values_from = rank) %>%
-    dplyr::select(-id, -p_seq)
+    tidyr::pivot_wider(names_from = prototype, values_from = rank) %>%
+    dplyr::select(insta, desc, warn, draw)
+  
   return(rank_matrix)
 }
 
@@ -147,96 +178,104 @@ get_rank_placketluce_results <- function(df) {
 
 get_rank_placketluce_coef_results <- function(df) {
   rank_matrix <- get_rank_matrix_data(df)
+  view(rank_matrix)
   pl_model <- PlackettLuce(rank_matrix)
-  # Extract coefficients
-  coefficients <- coef(pl_model)
-  
-  # Exponentiate the coefficients to get odds ratios
-  odds_ratios <- exp(coefficients)
-  
-  # Normalize the odds ratios to sum to 1
-  normalized_weights <- odds_ratios / sum(odds_ratios)
+  normalized_weights <- coef(pl_model, log=FALSE)
 
   return(normalized_weights)
 }
 
 ################################################
 
-# Utility to reshape ranking data
-get_participant_id_and_rankings <- function(df) {
-  df %>%
-    dplyr::select(participant_id = id, ranking.1., ranking.2., ranking.3., ranking.4.) %>%
-    pivot_longer(cols = starts_with("ranking."),
-                 names_to = "rank_position",
-                 values_to = "design") %>%
-    mutate(rank = as.numeric(gsub("ranking\\.", "", rank_position))) %>%
-    dplyr::select(participant_id, design, rank)
-}
-
-# Generic function to reshape a Web-CLIC dimension
-get_clic_dimension_long <- function(df, prefix, new_var) {
-  long_df <- df %>%
-    dplyr::select(participant_id = id,
-           !!paste0(prefix, "baseline") := !!sym(paste0("baseline", prefix)),
-           !!paste0(prefix, "desc") := !!sym(paste0("desc", prefix)),
-           !!paste0(prefix, "warn") := !!sym(paste0("warn", prefix)),
-           !!paste0(prefix, "drawing") := !!sym(paste0("drawing", prefix))) %>%
-    pivot_longer(cols = everything()[-1],
-                 names_to = "design_label",
-                 values_to = new_var) %>%
-    mutate(design = gsub(paste0("^", prefix), "", design_label),
-           design = gsub("drawing", "draw", design),
-           design = gsub("baseline", "insta", design)) %>%
-    dplyr::select(participant_id, design, !!sym(new_var))
-  return(long_df)
-}
-
-# Function to run correlation + ordinal logistic regression
-analyze_clic_effect_on_rank <- function(df, dimension_prefix, score_col_name) {
-  rank_data <- get_participant_id_and_rankings(df)
-  dimension_data <- get_clic_dimension_long(df, prefix = dimension_prefix, new_var = score_col_name)
+get_rank_clic_polr_results <- function(df) {
+  rank_data_long <- get_rank_long_data(df) %>%
+    mutate(
+      clar_score = case_when(
+        prototype == "insta" ~ baselineClar,
+        prototype == "desc" ~ descClar,
+        prototype == "draw" ~ drawingClar,
+        prototype == "warn" ~ warnClar,
+        TRUE ~ NA_real_
+      ),
+      like_score = case_when(
+        prototype == "insta" ~ baselineLike,
+        prototype == "desc" ~ descLike,
+        prototype == "draw" ~ drawingLike,
+        prototype == "warn" ~ warnLike,
+        TRUE ~ NA_real_
+      ),
+      info_score = case_when(
+        prototype == "insta" ~ baselineInfo,
+        prototype == "desc" ~ descInfo,
+        prototype == "draw" ~ drawingInfo,
+        prototype == "warn" ~ warnInfo,
+        TRUE ~ NA_real_
+      ),
+      cred_score = case_when(
+        prototype == "insta" ~ baselineCred,
+        prototype == "desc" ~ descCred,
+        prototype == "draw" ~ drawingCred,
+        prototype == "warn" ~ warnCred,
+        TRUE ~ NA_real_
+      ),
+      rank = factor(rank, levels = c(4, 3, 2, 1), ordered = TRUE)
+    ) %>%
+    dplyr::select(prototype, rank, clar_score, like_score, info_score, cred_score)
   
-  merged_data <- left_join(rank_data, dimension_data, by = c("participant_id", "design"))
+  # Fit proportional odds logistic regression
+  model <- MASS::polr(rank ~ cred_score + info_score, data = rank_data_long, Hess = TRUE)
   
-  # Spearman Correlation
-  spearman_result <- cor.test(merged_data$rank, merged_data[[score_col_name]], method = "spearman")
-  
-  # Ordinal Logistic Regression
-  merged_data$rank <- factor(merged_data$rank, levels = 4:1, ordered = TRUE)
-  model <- MASS::polr(as.formula(paste("rank ~", score_col_name)), data = merged_data, Hess = TRUE)
-  ctable <- coef(summary(model))
-  pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-  model_summary <- data.frame(ctable, "p value" = pvals)
-  
-  return(list(
-    spearman = spearman_result,
-    model_summary = model_summary
-  ))
-}
-
-# Combined model with all predictors
-get_combined_clic_model <- function(df) {
-  rank_data <- get_participant_id_and_rankings(df)
-  
-  cred <- get_clic_dimension_long(df, "Cred", "cred_score")
-  like <- get_clic_dimension_long(df, "Like", "like_score")
-  info <- get_clic_dimension_long(df, "Info", "info_score")
-  clar <- get_clic_dimension_long(df, "Clar", "clar_score")
-  
-  merged_all <- rank_data %>%
-    left_join(cred, by = c("participant_id", "design")) %>%
-    left_join(like, by = c("participant_id", "design")) %>%
-    left_join(info, by = c("participant_id", "design")) %>%
-    left_join(clar, by = c("participant_id", "design"))
-  
-  merged_all$rank <- factor(merged_all$rank, levels = 4:1, ordered = TRUE)
-  
-  model <- MASS::polr(rank ~ cred_score + like_score + info_score + clar_score, data = merged_all, Hess = TRUE)
+  # Extract coefficients and compute p-values
   ctable <- coef(summary(model))
   pvals <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
   model_summary <- data.frame(ctable, "p value" = pvals)
   
   return(model_summary)
+}
+
+
+get_sens_info_data <- function(df) {
+  data <- df %>%
+    mutate(infoscore_rank1 = case_when(
+      ranking.1. == "insta" ~ baselineInfo,
+      ranking.1. == "desc" ~ descInfo,
+      ranking.1. == "draw" ~ drawingInfo,
+      ranking.1. == "warn" ~ warnInfo,
+      TRUE ~ NA_real_  # in case of unexpected values
+    ))
+  return(data)
+}
+
+
+get_spearman_sens_info_results <- function(df) {
+  data <- get_sens_info_data(df)
+  result <- cor.test(data$sens, data$infoscore_rank1, method = "spearman")
+  
+  return(result)
+}
+
+
+get_better_scs_results <- function(df) {
+  # Remove NA values before calculation
+  mean_val <- mean(df$`betterSCS.SQ001.`, na.rm = TRUE)
+  sd_val <- sd(df$`betterSCS.SQ001.`, na.rm = TRUE)
+  
+  results <- list(mean = mean_val, sd = sd_val)
+  return(results)
+}
+
+get_ers_rank_1_means_results <- function(df) {
+  # Each participant has one ERS score — associate it with their first-ranked prototype
+  summary_stats <- df %>%
+    group_by(ranking.1.) %>%
+    summarise(
+      Mean = round(mean(ers, na.rm = TRUE), 2),
+      SD = round(sd(ers, na.rm = TRUE), 2),
+      .groups = "drop"
+    ) %>%
+    rename(rank_1_prototype = ranking.1.)
+  
+  return(summary_stats)
 }
 
 

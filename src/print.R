@@ -11,11 +11,13 @@ print(get_age_dist_plot(data))
 print(get_education_level_dist_plot(data))
 print(get_instagram_usage_plot(data))
 print(get_ers_box_plot(data))
+print(get_better_scs_results(data))
 print(get_clar_density_plot(data))
 print(get_like_density_plot(data))
 print(get_info_density_plot(data))
 print(get_cred_density_plot(data))
 print(get_clic_density_plot(data))
+print(get_combined_clic_density_plot(data))
 print(get_ranking_dist_plot(data))
 print(get_rank_coefficient_plot(data))
 
@@ -33,9 +35,15 @@ print(get_clic_qq_plot(data))
 # Homogeneity of variance
 print(get_clic_levenes_results(data))
 
+# CLIC descriptive
+print(get_clic_descriptive_stats_results(data))
+print(get_clic_descriptive_stats_tex(data))
+
 # CLIC ANOVA
 print(get_clic_repeated_measures_anova_results(data))
 print(get_clic_repeated_measures_anova_tex(data))
+print(get_clic_tukey_tex(data))
+print(get_clic_tukey_results(data))
 
 # CLIC pairwise t test
 print(get_clic_pairwise_prototype_t_test_results(data))
@@ -54,10 +62,25 @@ print(get_rank_anova_results(data))
 # RANK wilcoxon
 print(get_rank_wilcoxon_results(data))
 
+# RANK 1 - ERS
+print(get_ers_rank_1_means_results(data))
+
 # RANK placketluce
 print(get_rank_placketluce_results(data))
 print(get_rank_placketluce_coef_results(data))
 
 #######################################################
 
-print(get_clic_impact_on_rank_tex(data))
+# RANK-CLIC polr
+print(get_rank_clic_polr_results(data))
+print(get_rank_clic_polr_tex(data))
+
+#######################################################
+
+# INFO-SENS correlation
+print(get_correlation_sens_info_plot(data))
+
+# INFO-SENS spearman
+print(get_spearman_sens_info_results(data))
+
+

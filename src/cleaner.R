@@ -4,6 +4,8 @@ library(rlang)
 library(ez)
 
 filter_responses <- function(df) {
+  df <- df %>% drop_na(lastpage)
+  
   first_check_passed <- !is.na(df$sensitivity2.sensAttentionCheck.) & df$sensitivity2.sensAttentionCheck. == 4
   
   second_check_passed <- (
@@ -24,7 +26,8 @@ filter_responses <- function(df) {
     valid = df[first_check_passed & second_check_passed & completed & before_survey_cutoff,],
     almost_valid = df[(first_check_passed & second_check_passed & !completed) | (first_check_passed & second_check_passed & !before_survey_cutoff),],
     semi_valid = df[first_check_passed != second_check_passed,],
-    invalid = df[!(first_check_passed | second_check_passed),]
+    invalid = df[!(first_check_passed | second_check_passed),],
+    completed_in_time = df[completed & before_survey_cutoff,]
   )
 }
 
@@ -55,11 +58,28 @@ remove_columns <- function(df, cols_to_remove) {
 
 clean_responses <- function(df) {
   df <- df %>% rename(p_seq = GROUP)
+  df <- add_duration_col(df)
   df <- clean_useless_cols(df)
   df <- clean_sensitivity_cols(df)
   df <- clean_prototype_cols(df)
   
   return(df)
+}
+
+add_duration_col <- function(df) {
+    if (!("submitdate" %in% names(df)) || !("startdate" %in% names(df))) {
+      df$duration <- NA_real_
+    } else {
+      df <- df %>%
+        mutate(
+          duration = ifelse(
+            is.na(submitdate) | is.na(startdate),
+            NA_real_,
+            round(as.numeric(difftime(submitdate, startdate, units = "mins")), 1)
+          )
+        )
+    }
+    return(df)
 }
 
 clean_useless_cols <- function(df) {

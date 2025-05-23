@@ -2,7 +2,7 @@ library(httr)
 
 
 write_df_csv <- function(df, location) {
-  write.csv(cleaned_valid, location, row.names = FALSE)
+  write.csv(df, location, row.names = FALSE)
 }
 
 
