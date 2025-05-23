@@ -50,7 +50,7 @@ get_clic_descriptive_stats_tex <- function(df) {
   
   # Make column headers bold
   colnames(results) <- c(
-    "\\textbf{Prototype}", 
+    "\\textbf{SCS design}", 
     "\\textbf{Mean}", 
     "\\textbf{SD}", 
     "\\textbf{Min}", 
